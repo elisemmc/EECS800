@@ -1,0 +1,124 @@
+\documentclass[draft]{exam} % {{{
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{tikz, float, tabu, enumitem}
+\usetikzlibrary{calc,decorations.markings,matrix,arrows,positioning}
+
+% symbol definitions
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\renewcommand{\phi}{\varphi}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\d}{\;d}
+
+% environment definitions
+\newtheorem*{lem}{Lemma}
+\theoremstyle{definition} \newtheorem*{defn}{Definition}
+
+% custom commands
+\newcommand{\ds}[1]{\displaystyle{#1}}
+\newcommand{\stack}[2]{\genfrac{}{}{0pt}{}{#1}{#2}}
+\newcommand{\m}[1]{ \ensuremath{\mathbb{#1}} }      % for models
+\newcommand{\cl}[1]{ \ensuremath{\mathcal{#1}} }    % for classes
+\newcommand{\pmat}[1]{\ensuremath{ \begin{pmatrix} #1 \end{pmatrix} }}
+\newcommand{\bmat}[1]{\ensuremath{ \begin{bmatrix} #1 \end{bmatrix} }}
+\newcommand{\vect}[1]{\ensuremath{\left< #1 \right>}}
+
+% exam documentclass settings
+\renewcommand{\thepartno}{\roman{partno}}
+\renewcommand{\thesubpart}{\alph{subpart}}
+\renewcommand{\subpartlabel}{(\thesubpart)}
+\renewcommand{\subsubpartlabel}{(\thesubsubpart)}
+\renewcommand{\choicelabel}{\thechoice)}
+% true or false questions (use \TFQuestion)
+\newcommand{\TrueFalse}{\hspace*{0.25em}\textbf{True}\hspace*{1.25em}\textbf{False}\hspace*{1em}}
+\newlength{\mylena} \newlength{\mylenb}
+\settowidth{\mylena}{\TrueFalse}
+\newcommand{\TFQuestion}[1]{
+  \setlength{\mylenb}{\linewidth} 
+  \addtolength{\mylenb}{-121.15pt}
+  \parbox[t]{\mylena}{\TrueFalse}\parbox[t]{\mylenb}{#1}}
+
+% document specific stuff
+
+%============================================================================}}}
+
+\begin{document}
+% quiz header  {{{
+\noindent\textbf{\large{EECS 731: Quiz 1}} \hfill 2016-09-08
+\hrule \bigskip
+\noindent \textbf{Name:} \underline{\hspace{200pt}}
+%============================================================================}}}
+
+\begin{questions} \printanswers
+% to show solutions, \print answers needs to be uncommented
+
+\question[3] Prove $A \cup (B \cap C) = (A \cup 
+B) \cap (A \cup C)$ 
+
+\begin{solution}  % {{{
+\begin{align*}
+\text{Let } &x \in A \cup (B \cap C) \\
+\implies &x \in A \text{ or } x \in B \cap C \\
+\implies &x \in A \text{ or } \{x \in B \text{ and } x \in C\} \\
+\implies &x \in A \text{ or } x \in B \text{ and } x \in A \text{ or } x \in C \\
+\implies &x \in A \cup B \text{ and } x \in A \cup C \\
+\implies &x \in (A \cup B) \cap (A \cup C) \\
+\implies &A \cup (B \cap C) \subseteq (A \cup B) \cap (A \cup C) \text{ (1 point)}\\
+\end{align*}
+
+
+by a similar argument we can show that
+\[(A \cup B) \cap (A \cup C) \subseteq A \cup (B \cap C) \text{ (1 point)}\]
+
+Recall if $A \subseteq B$ and 
+$B \subseteq A$, then $A=B$. Thus $A \cup (B \cap C) = (A \cup 
+B) \cap (A \cup C)$(1 point)
+\end{solution}
+%\vfill
+
+\question[2] Define conditional probability and Bayes' Theorem.
+\begin{solution}
+Conditional Probability (1 point):
+\[P(A|B)=\frac{P(A\cap B)}{P(B)}\]
+Bayes' Rule (1 point):
+\[P(A|B)=\frac{P(B|A)P(A)}{P(B)}\]
+Bayes' Theorem (bonus point):
+\[P(A_i|B)=\frac{P(B|A_i)P(A_i)}{\sum_{A_j \in A}P(B|A_j)P(A_j)}\]
+\end{solution} %}}}
+%\vfill
+
+\question[5] 2\% of women have lung cancer. 85\% of lung tests for cancer
+correctly detect cancer when the woman has cancer. 10 \% of lung cancer
+test detect cancer when it's not there. A woman receives a positive test
+result. What are the chances she actually has cancer?
+
+\begin{solution} %{{{
+\begin{align*}
+P(\text{ cancer }) &= .02    & P(\text{ positive test }|\text{ cancer }) &= .85\\
+P(\text{ not cancer }) &= .98   & P(\text{ positive test }|\text{ not cancer }) &= .10
+\end{align*}
+\begin{align*}
+P(\text{ cancer }|\text{ positive test }) &= 
+\frac{P(\text{ positive test }|\text{ cancer })P(\text{ cancer })}{P(\text{ positive test })} \\
+\end{align*}
+\begin{align*}
+P(\text{positive test}) = P(\text{positive test}|\text{cancer})P(\text{cancer})+P(\text{positive test}|\text{not cancer})P(\text{not cancer}) \\
+\end{align*}
+
+\begin{align*}
+P(\text{ cancer }|\text{ positive test })&=\frac{.85 * .02}{(.85*.02) +(.1*.98)}
+=\frac{.017}{.115}
+=14.78\% 
+\end{align*}
+\end{solution} %}}}
+\vfill
+
+\end{questions} \end{document}
+
+\begin{solution}  % {{{
+<+solution+>
+\end{solution}
+%===========================================================================}}}
+%===========================================================================}}}

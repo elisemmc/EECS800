@@ -1,0 +1,14 @@
+Elise McEllhiney
+David Young
+1 SLAM
+2 Deep Reinforcement Learning (DQN)
+3 bandit problems
+4 Association rule learning and the Apriori algorithm
+5 Boosting/Bootstrapping
+6 LDA/DF-LDA
+7 deep ensemble methods
+8 Boltzmann machines
+9 conditional random fields
+10 HMM and Viterbi
+11 MCMC sampling & Gibbs sampling
+12 Dominance based rough sets
