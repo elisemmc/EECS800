@@ -1,6 +1,7 @@
 Confusion Matrix
-     0    1
-0  3.0  0.0
-1  0.0  1.0
+Predicted  0  1
+Actual         
+0          3  0
+1          0  1
 
 Accuracy = 100.0%

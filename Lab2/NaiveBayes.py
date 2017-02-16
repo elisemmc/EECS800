@@ -112,16 +112,28 @@ def confusionMatrix(prediction, groundTruth):
     '''
     Return and print the confusion matrix.
     '''
-    confMatrix = np.zeros((2,2))
-    for i in range(len(prediction)):
-        confMatrix[groundTruth[i]][prediction[i]] += 1
-
-    dfConfMatrix = pd.DataFrame(confMatrix)
+    conf = pd.crosstab(groundTruth, prediction, rownames=['Actual'], colnames=['Predicted'])
 
     print 'Confusion Matrix'
-    print dfConfMatrix
+    print conf
     print ''
-    return dfConfMatrix
+    return conf
+
+def accuracy(confusionMatrix):
+    '''
+    Calculates accuracy given the confusion matrix
+    '''
+    numerator = 0
+    denominator = 0
+
+    for index, row in confusionMatrix.iterrows():
+        for i in range(len(row)):
+            if(index == i):
+                numerator += row[i]
+
+            denominator += row[i]
+
+    return numerator / denominator
 
 
 # Call the confusionMatrix function and print the confusion matrix as well as the accuracy of the model.
@@ -131,7 +143,7 @@ def confusionMatrix(prediction, groundTruth):
 groundTruth =  pd.Series(groundtruth)
 prediction = pd.Series(prediction)
 conf = confusionMatrix(prediction, groundTruth)
-accuracy = ( conf[0][0] + conf[1][1] ) / ( conf[0][0] + conf[0][1] + conf[1][0] + conf[1][1] ) #define accuracy
+accuracy = accuracy(conf) #( conf[0][0] + conf[1][1] ) / ( conf[0][0] + conf[0][1] + conf[1][0] + conf[1][1] ) #define accuracy
 print 'Accuracy = '+str(accuracy*100)+'%'
 print ''
 
