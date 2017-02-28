@@ -1,0 +1,293 @@
+\documentclass[draft]{exam} % {{{
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{tikz, float, tabu, enumitem}
+\usetikzlibrary{calc,decorations.markings,matrix,arrows,positioning}
+
+% symbol definitions
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\renewcommand{\phi}{\varphi}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\d}{\;d}
+
+% environment definitions
+\newtheorem*{lem}{Lemma}
+\theoremstyle{definition} \newtheorem*{defn}{Definition}
+
+% custom commands
+\newcommand{\ds}[1]{\displaystyle{#1}}
+\newcommand{\stack}[2]{\genfrac{}{}{0pt}{}{#1}{#2}}
+\newcommand{\m}[1]{ \ensuremath{\mathbb{#1}} }      % for models
+\newcommand{\cl}[1]{ \ensuremath{\mathcal{#1}} }    % for classes
+\newcommand{\pmat}[1]{\ensuremath{ \begin{pmatrix} #1 \end{pmatrix} }}
+\newcommand{\bmat}[1]{\ensuremath{ \begin{bmatrix} #1 \end{bmatrix} }}
+\newcommand{\vect}[1]{\ensuremath{\left< #1 \right>}}
+
+% exam documentclass settings
+\renewcommand{\thepartno}{\roman{partno}}
+\renewcommand{\thesubpart}{\alph{subpart}}
+\renewcommand{\subpartlabel}{(\thesubpart)}
+\renewcommand{\subsubpartlabel}{(\thesubsubpart)}
+\renewcommand{\choicelabel}{\thechoice)}
+% true or false questions (use \TFQuestion)
+\newcommand{\TrueFalse}{\hspace*{0.25em}\textbf{True}\hspace*{1.25em}\textbf{False}\hspace*{1em}}
+\newlength{\mylena} \newlength{\mylenb}
+\settowidth{\mylena}{\TrueFalse}
+\newcommand{\TFQuestion}[1]{
+  \setlength{\mylenb}{\linewidth} 
+  \addtolength{\mylenb}{-121.15pt}
+  \parbox[t]{\mylena}{\TrueFalse}\parbox[t]{\mylenb}{#1}}
+
+% document specific stuff
+
+%============================================================================}}}
+
+\begin{document}
+% quiz header  {{{
+\noindent\textbf{\large{EECS 800: Homework 2}} \hfill \today
+\hrule \bigskip
+\noindent \textbf{Name:} \underline{Elise McEllhiney} \qquad Collaborators: Bekah Coggin, David Young, David Menager
+%============================================================================}}}
+
+\begin{questions} \printanswers
+% to show solutions, \print answers needs to be uncommented
+
+\question 4.18 Naive Bayes with mixed features \\
+Consider a 3-class naive Bayes classifier with one binary feature and one Gaussian feature:
+$$y \sim Mu( y | \pi , 1 ), x_1 | y = c \sim Ber( x_1 | \theta_c ), x_2 | y = c \sim \mathcal{N} ( x_2 | \mu_c , \sigma_c^2 )$$
+Let the parameter vectors be as follows:
+$$\pmb{\pi} = (0.5, 0.25, 0.25), \quad \pmb{\theta} = (0.5, 0.5, 0.5), \quad \pmb{\mu} = (-1, 0, 1), \quad \pmb{\sigma}^2 = (1, 1, 1)$$
+
+\begin{solution} \\ % {{{
+$\circ \triangleq$ Hadamard Product
+
+a. Compute $p( y | x_1 = 0, x_2 =  0 ) \text{(the result should be a vector of 3 numbers that sums to 1)}$\\
+$$p(y|x_1=0, x_2=0) = \frac{\pmb{\pi}\circ\pmb{\theta}\circ N(\pmb{x} | \pmb{\mu}, \pmb{\sigma}^2 )}{\sum_j \pi_j \theta_j N(x_j | \mu_j, \sigma_j^2 )} = \frac{(0.06, 0.05, 0.03)}{0.14} = (0.43, 0.36, 0.21)$$
+
+b. Compute $p( y | x_1 = 0 )$\\
+$$p(y | x_1 = 0) = \frac{\pmb{\pi}\circ \pmb{\theta}}{\sum_j \pi_j \theta_j} = \frac{(0.25, 0.125, 0.125)}{0.5} = (0.5, 0.25, 0.25)$$
+
+c. Compute $p( y | x_2 = 0 )$\\
+$$N(x|\mu, \sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2 }}\exp{(-\frac{1}{2 \sigma^2}(x-\mu)^2)}$$
+$$N(\pmb{x} | \pmb{\mu}, \pmb{\sigma}^2 ) = (0.24, 0.40, 0.24)$$
+$$p(y | x_2 = 0) =  \frac{\pmb{\pi}\circ N(\pmb{x} | \pmb{\mu}, \pmb{\sigma}^2 )}{\sum_j \pi_j N(x_j | \mu_j, \sigma_j^2 )} = (0.43, 0.36, 0.21)$$
+
+d. Explain any interesting patterns you see in your results.  Hint: look at the parameter vector $\theta$ \\\\
+Since $x_1$ is independent of $y$ we can see that it doesn't increase the amount of information we have about $y$.  This shows in the $\theta$ vector since $(0,1)$ are equally likely for any class.  You always have a 50\% chance of getting either a 0 or 1 regardless of the class.
+\end{solution}
+
+
+\question 7.2 Multi-output linear regression \\
+
+\begin{solution}  % {{{
+$$\hat{W} = (\Phi(x)^T \Phi(x))^{-1}\Phi(x)^T y$$
+\[
+\Phi(x) =
+\begin{bmatrix}
+1 & 0 \\
+1 & 0 \\
+1 & 0 \\
+0 & 1 \\
+0 & 1 \\
+0 & 1 \\
+\end{bmatrix}
+\]
+\[
+\Phi(x)^T \Phi(x) =
+\begin{bmatrix}
+1 & 1 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 1 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 \\
+1 & 0 \\
+1 & 0 \\
+0 & 1 \\
+0 & 1 \\
+0 & 1 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+3 & 0 \\
+0 & 3 \\
+\end{bmatrix}
+\]
+\[
+(\Phi(x)^T \Phi(x))^{-1} =
+\begin{bmatrix}
+\frac{1}{3} & 0 \\
+0 & \frac{1}{3} \\
+\end{bmatrix}
+\]
+\[
+\pmb{\hat{W}} = (\Phi(x)^T \Phi(x))^{-1} \Phi(x)^T y =
+\begin{bmatrix}
+\frac{1}{3} & 0 \\
+0 & \frac{1}{3} \\
+\end{bmatrix}
+\begin{bmatrix}
+1 & 1 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 1 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+-1 & -1 \\
+-1 & -2 \\
+-2 & -1 \\
+1 & 1 \\
+1 & 2 \\
+2 & 1 \\
+\end{bmatrix}
+%double check this!
+=
+\begin{bmatrix}
+-\frac{4}{3} & -\frac{4}{3} \\
+\frac{4}{3} & \frac{4}{3} \\
+\end{bmatrix}
+\]
+\end{solution}
+
+\question 7.7 Sufficient statistics for online linear regression \\
+$$\bar{x}^{(n)} = \frac{1}{n} \sum_{i=1}^{n} x_i \qquad \bar{y}^{(n)} = \frac{1}{n} \sum_{i=1}^{n} y_i$$
+$$C_{xx}^{(n)} = \frac{1}{n} \sum_{i=1}^{n} (x_i - \bar{x})^2 \qquad C_{xy}^{(n)} = \frac{1}{n} \sum_{i=1}^{n} (x_i-\bar{x})(y_i - \bar{y}) \qquad C_{yy}^{(n)} = \frac{1}{n} \sum_{i=1}^{n}(y_i - \bar{y})^2$$
+
+\begin{solution}  \\% {{{
+(a) What are the minimal set of statistics that we need to estimate $w_0$?\\
+$C_{xx}^(n)$ and $C_{xy}^{(n)}$ are sufficient statistics for $w_0$
+
+(b) What are the minimal set of statistics that we need to estimate $w_1$?\\
+$\bar{x}^{(n)}$, $\bar{y}^{(n)}$, $C_{xx}^(n)$ and $C_{xy}^{(n)}$ are sufficient statistics $w_1$
+
+(c) Suppose a new data point, $x_{n+1}, y_{n+1}$ arrives and we want to update our sufficient statistics without looking at the old data, which we have not stored.  Show that we can do this for $\bar{x}$ as follows.\\
+\begin{align*}
+\bar{x}^{(n+1)} & = \frac{1}{n+1} \sum_{i=1}^{n+1} x_i \\
+& = \frac{1}{n+1} (n \bar{x}^{n} + x_{n+1}) \quad \parbox{20em}{the new sample summed with the current average current average then divided by the new total of samples.  This gives equal weight to each sample} \\
+& = \bar{x}^{n} + \frac{1}{n+1} (x_{n+1} - \bar{x}^{n}) \\
+\bar{y}^{(n+1)} & = \frac{1}{n+1} \sum_{i=1}^{n+1} y_i \\
+& = \frac{1}{n+1} (n \bar{y}^{(n)} + x_{n+1}) \\
+& = \frac{1}{n+1} (y_{n+1} - \bar{y}^{(n)})
+\end{align*}
+This has the form: new estimate is old estimate plus correction.  We see that the size of the correction diminishes over time (i.e., as we get more samples).  Derive a similar expression to update $\bar{y}$\\
+
+(d) Show that one can update $C_{xy}^{n+1}$ recursively using
+\begin{align*}
+C_{xy}^{(n+1)} = \frac{1}{n+1}[x_{n+1}y_{n+1} + nC_{xy}^{(n)} + n\bar{x}^{(n)}\bar{y}^{(n)} - (n+1)\bar{x}^{n+1}\bar{y}^{n+1}]
+\end{align*}
+Let $n = n+1$:
+\begin{align*}
+C_{xy}^{(n+1)} & = \frac{1}{n+1} \sum_{i=1}^{n+1} (x_i-\bar{x}^{(n+1)})(y_i - \bar{y}^{(n+1)}) \\
+& = \frac{1}{n+1} \Big( \sum_{i=1}^{n+1} x_i y_i - (n+1) \bar{x}^{(n+1)} \bar{y}^{(n+1)} \Big) \\
+& = \frac{1}{n+1} \Big( x_{(n+1)} y_{(n+1)} + \sum_{i=1}^{n} x_i y_i - n\bar{x}^{(n)}\bar{y}^{(n)} + n\bar{x}^{(n)}\bar{y}^{(n)} - (n+1)\bar{x}^{(n+1)}\bar{y}^{(n+1)} \Big)\\
+& = \frac{1}{n+1} \Big( x_{(n+1)} y_{(n+1)} + C_{xy}^{(n)} + n\bar{x}^{(n)}\bar{y}^{(n)} - (n+1)\bar{x}^{(n+1)}\bar{y}^{(n+1)} \Big)\\
+\end{align*}
+Derive a similar expression to update $C_{xx}$
+\begin{align*}
+C_{xx}^{(n+1)} & = \frac{1}{n+1} \sum_{i=1}^{n+1} (x_i-\bar{x}^{(n+1)})^2 \\
+& = \frac{1}{n+1} \Big( \sum_{i=1}^{n+1} x_i x_i - (n+1) \bar{x}^{(n+1)}\bar{x}^{(n+1)} \Big) \\
+& = \frac{1}{n+1} \Big( x_{(n+1)} x_{(n+1)} + \sum_{i=1}^{n} x_i^2 - n\bar{x}^{(n)}\bar{x}^{(n)} + n\bar{x}^{(n)}\bar{x}^{(n)} - (n+1)\bar{x}^{(n+1)}\bar{x}^{(n+1)} \Big)\\
+& = \frac{1}{n+1} \Big( x_{(n+1)} x_{(n+1)} + C_{xx}^{(n)} + n\bar{x}^{(n)}\bar{x}^{(n)} - (n+1)\bar{x}^{(n+1)}\bar{x}^{(n+1)} \Big)\\
+\end{align*}
+\end{solution}
+
+
+\question Additional Question 1. \\
+Compute the numbers of parameters that need to be estimated for the models listed below. \\
+
+\begin{solution}  \\% {{{
+(a) Naive Bayes (categorical input variables) \\
+$$pc + c -1 \quad \text{parameters are needed for this model}$$
+$$MLE = \theta_{jc} \pi_c$$
+We also know that $\sum{\pi_c} = 1$\\
+Since we don't know that about the $\theta$ value as the theta values do not necessarily sum to one because they are dependent on the class that they are associated with, we know that we need $pc + c -1$ parameters for this model\\
+
+(b) Quadratic Discriminant Analysis (QDA) \\
+$$\Big(\frac{p(p+1)}{2}+ p \Big)c \quad \text{parameters are needed for this model}$$
+We need the covariance matrix for sigma which is symmetric so we need the variance values and the half of the covariance values (since the matrix is symmetric we only need half the covariance values) then we need $\mu$.  We need these values for each class, and hence the above conclusion.\\
+
+(c) Linear Discriminant Analysis (LDA) \\
+$$\frac{p(p+1)}{2}+ p c \quad \text{parameters are needed for this model}$$
+We need the same covariance matrix for this model, but we assume the $\Sigma$ parameter is the same for all the classes so we only need one covariance p x p matrix.  We still need\\
+
+(d) Diagonalized QDA (e.g. covariance(Xi, Xj ) = 0 given i 6= j) \\
+$$(p + p)c \quad \text{parameters are needed for this model}$$
+Again, a more limited number of parameters than the QDA since we only need the diagonal of the covariance matrix for the parameters.  Again we still need a $\mu$ value for each feature.\\
+
+(e) Diagonalized LDA (e.g. covariance(Xi, Xj ) = 0 given i 6= j) \\
+$$p + p c \quad \text{parameters are needed for this model}$$
+Again, we share the sigma so we need a weight for each feature and a $\mu$ for each class\\
+
+(f) Linear Regression \\
+$$p+1 \quad \text{parameters are needed for this model}$$
+Which is the size of $\beta$ and this is equal to the number of features, the +1 is for $\beta_0$\\
+
+(g) Ridge Regression \\
+$$p+2 \quad \text{parameters are needed for this problem}$$
+P is the size of $\beta$ and this is equal to the number of features.  One $+1$ is for the $\beta_0$ parameter and the other $+1$ is the parameter estimating $\lambda$
+
+\end{solution}
+
+
+\question Additional Question 2. \\
+(bonus) Show that the ridge regression estimate is the mean (and mode) of the posterior distribution, under a Gaussian prior $\beta \sim N (0, \tau \pmb{I})$ where I is the identity matrix, and Gaussian sampling model $y \sim N (\pmb{X}\beta, \sigma^2\pmb{I})$. Find the relationship between the regularization parameter $\lambda$ in the ridge formula and the variances $\tau$ and $\sigma^2$. \\
+
+\begin{solution}  % {{{
+
+\end{solution}
+
+
+\question Additional Question 3. \\
+
+\begin{solution} \\ % {{{
+(a) Derive the OLS linear regression estimate. \\
+
+$$\min_{\hat{\beta}_0,\hat{\beta}_1}\sum_{i=1}^N (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_1)^2$$
+$$\frac{\partial W}{\partial \hat{\beta}_0} = \sum_{i=1}^N -2(y_i - \hat{\beta}_0 -\hat{\beta}_1 x_i) = 0$$
+$$\frac{\partial W}{\partial \hat{\beta}_1} = \sum_{i=1}^N -2x_i(y_i - \hat{\beta}_0 -\hat{\beta}_1 x_i) = 0$$
+\\
+$$\frac{\partial W}{\partial \hat{\beta}_0} = \sum_{i=1}^N -2(y_i - \hat{\beta}_0 -\hat{\beta}_1 x_1) = 0$$
+$$\sum_{i=1}^N y_i - \hat{\beta}_0 -\hat{\beta}_1 x_1 = 0$$
+$$N \hat{\beta}_0 = N \bar{y} - N \hat{\beta_1} \bar{x}$$
+$$\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}$$
+\\
+$$\frac{\partial W}{\partial \hat{\beta}_1} = \sum_{i=1}^N -2x_i(y_i - \hat{\beta}_0 -\hat{\beta}_1 x_1) = 0$$
+$$ \sum_{i=1}^N x_i y_i - \hat{\beta}_0 x_i -\hat{\beta}_1 x_i^2) = 0$$
+$$ \sum_{i=1}^N x_i y_i - (\bar{y} - \hat{\beta}_1 \bar{x}) x_i -\hat{\beta}_1 x_i^2) = 0$$
+$$\sum_{i=1}^N x_i y_i - \bar{y}\sum_{i=1}^N x_i + \hat{\beta}_1 \bar{x} \sum_{i=1}^N x_i - \hat{\beta_1}\sum_{i=1}^N x_i^2 = 0$$
+$$\sum_{i=1}^N y_i = N \bar{y}$$
+$$\sum_{i=1}^N x_i = N \bar{x}$$
+$$\hat{\beta}_1 = \frac{\sum_{i=1}^N (x_i-\bar{x})(y_i \bar{y})}{\sum_{i=1}^N (x_i - \bar{x})^2}$$
+\\
+(b) Derive the Ridge regression estimate. \\
+\begin{align*}
+RSS & = ||y-\hat{y}||_2^2 + \lambda || \beta ||_2^2 \\
+& = ( Y - X \beta )^2 + \lambda(\beta)^2 \\
+& = ( Y - X \beta )^T ( Y - X \beta ) + \lambda ( \beta )^T \beta \\
+& = ( Y^T - \beta^T X^T )( Y - X \beta ) + \lambda( \beta^T \beta ) \\
+& = Y^T Y - \beta^T X^T Y + Y^T X \beta + \beta^T X^T X \beta + \lambda ( \beta^T \beta ) \\\\
+\frac{\partial}{\partial \beta^T} & = 0 - X^T Y + 0 + X^T X \beta + \lambda \beta = 0 \\
+& = X^T Y + X^T X \beta + \lambda \beta = 0 \\\\
+X^T Y & = X^T X \beta + \lambda \beta \\
+& = \beta ( X^T X + \lambda I ) \\\\
+\hat{\beta} & = ( X^T X + \lambda I )^{-1}( X^T Y )  
+\end{align*}
+
+(c) Show that the estimation of $\beta^{ridge}_\lambda$ is a biased estimator. [Hint: compute the expected value of the ridge estimate and show that it is not equal to the expected value of the OLS estimate.]
+\begin{align*}
+\hat{\beta}_{\lambda}^{ridge} & = ( X^T X + \lambda I )^{-1} ( X^T y ) \\
+& = ( X^T X + \lambda I_p )^{-1} ( X^T X ) ( X^T X )^{-1} X^T y \\
+& = ( X^T X ( I + ( X^T X )^{-1} ) )^{-1} ( X^T X ) \hat{\beta}^{OLS} \\
+& = ( I + ( X^T X )^{-1} ) )^{-1} \hat{\beta}^{OLS} \\\\
+( I + ( X^T X )^{-1} ) )^{-1} \hat{\beta}^{OLS} & \neq \hat{\beta}^{OLS} \quad \text{unless } \lambda = 0
+\end{align*}
+
+\end{solution}
+%\vfill
+
+\end{questions} \end{document}
+
+\begin{solution}  % {{{
+<+solution+>
+\end{solution}
+%===========================================================================}}}
+%===========================================================================}}}
