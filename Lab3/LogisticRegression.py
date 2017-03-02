@@ -19,6 +19,7 @@ for i in X:
     std = X[i].std(axis=0)
     X[i] = ( X[i] - mean )/std
 X.insert(0, "Design", 1.0)
+Xcopy = X.copy()
 Y = df.iloc[:,-1]  
 groundTruth = Y #df['Y']
 #print groundTruth
@@ -46,7 +47,7 @@ def costFunction(beta, X, Y):
     costSum = 0
 
     m = len(X)
-    print np.sum( np.dot(X[0,:], beta.T) ) 
+    #print np.sum( np.dot(X[0,:], beta.T) ) 
     for i in range(m):
         hypothesis = 1 / ( 1 + np.exp(- np.sum( np.dot(X[i,:], beta.T) )) )
         costSum += Y[:,i] * np.log( hypothesis ) + ( 1-Y[:,i] ) * ( np.log( 1 - hypothesis ) )
@@ -59,15 +60,20 @@ def gradient(beta, X, Y):
     '''
     This function returns the gradient calucated.
     '''
-    m = len(X)
-    grad = np.matrix(np.zeros((1,X.shape[1])), dtype=np.float64)
+    beta = np.matrix(beta)
+    X = np.matrix(X)
+    Y = np.matrix(Y)
 
-    for i in range(m):
-        exponent = np.exp( - np.sum( np.dot( X[i,:], beta.T ) ) )
-        denom = 1 + exponent
-        grad += Y[:,i] * ( ( exponent*X[i,:] ) / denom ) + ( 1 - Y[:,i] ) * ( ( exponent*X[i,:] ) / ( np.power( denom, 2 ) - denom ) )
-    
-    grad = grad/m
+    m = len(X)
+
+    parameters = len(X.T)
+    grad = np.zeros(parameters)
+
+    loss = sigmoid( X * beta.T ) - Y
+
+    for j in range(parameters):
+        gradient =  np.multiply(loss, X[:,j])
+        grad[j] = np.sum(gradient)/m
 
     return grad
 
@@ -79,9 +85,9 @@ def gradientDescent(X, Y, beta, alpha, iters):
     '''
     cost = []
 
-    for i in range(3):
+    for i in range(iters):
         grad = gradient(beta, X, Y)
-        beta = beta - alpha * grad
+        beta = beta - alpha * grad.T
         cost.append(costFunction(beta, X, Y))
 
     return beta, cost
@@ -91,22 +97,15 @@ def gradientDescent(X, Y, beta, alpha, iters):
 alpha = 0.01 #define
 iters = 1000 #define
 result = gradientDescent(X, Y, beta, alpha, iters)
-
-
-# # # Now , only define the gradient function that we can use in the SciPy's optimize module to find the optimal betas. 
-# def gradient(beta, X, Y):
-#     '''
-#     This function returns the gradient calucated.
-#     '''
-
-#     return grad
+print result[0]
 
 
 # Optimize the parameters given functions to compute the cost and the gradients. We can use SciPy's optimization to do the same thing.
 # Define a variable result and complete the functions by adding the right parameters.
 
 #the optimised betas are stored in the first index of the result variable
-#result = opt.fmin_tnc(func= , x0= , fprime = , args= )
+result = opt.fmin_tnc(func = costFunction, x0 = beta, fprime = gradient, args=(X,Y))
+print result
 
 
 # Define a predict function that returns 1 if the probablity of the result from the sigmoid function is greater than 0.5, using the best betas and 0 otherwise.
@@ -115,19 +114,22 @@ def predict(beta, X):
     '''
     This function returns a list of predictions calculated from the sigmoid using the best beta.
     '''
-    prediction = []
-
-    for i in range(len(X)):
-        hypothesis = 1 / ( 1 + np.exp(- np.sum( np.dot(X[i,:], beta.T) ) ) )
-        prediction.append( 1 if ( hypothesis > 0.5 ) else 0 )
+    print beta.T
+    hypothesis = sigmoid(X * beta.T)
+    #print hypothesis
+    prediction = ( 1 if ( x > 0.5 ) else 0  for x in hypothesis )
 
     return prediction#define
 
 
 # Store the prediction in a list after calling the predict function with best betas and X.
-bestBeta = np.matrix(result[0])  
+bestBeta = np.matrix(result[0])
+print "best"
+print bestBeta  
 predictions = predict(bestBeta, X)
-
+print predictions
+predictionDf = pd.DataFrame()
+predictionDf['predictions'] = predictions
 
 # Calculate the accuracy of your model. The function should take the prediction and groundTruth as inputs and return the 
 # confusion matrix. The confusion matrix is of 'dataframe' type.
@@ -158,9 +160,16 @@ def accuracy(confusionMatrix):
 #Please write a SHORT report and explain these results. Include the explanations for both logistic and linear regression
 #in the same PDF file. 
 
+print ""
+print ""
+print groundTruth.shape
+print predictionDf.shape
+
 groundTruth = pd.Series(groundTruth)
-prediction = pd.Series(predictions)
+prediction = pd.Series(predictionDf)
+
 conf = confusionMatrix(prediction, groundTruth) #define
+print conf
 acc = accuracy(conf) #define
 print 'Accuracy = '+str(acc*100)+'%'
 

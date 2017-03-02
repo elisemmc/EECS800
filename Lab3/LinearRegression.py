@@ -16,26 +16,29 @@ for i in df:
     mean = df[i].mean()
     std = df[i].std()
     df[i] = ( df[i] - mean )/std
+df.insert(0, "Design", 1.0)
 
 # print df
 # 1. After you've added the intercept term, 
 # define X as the features in the dataframe. Define Y as the target variable.
 # 2. Convert them to a numpy array and define beta(the coeffecients) with zeros.
-X = df.drop(df.columns[len(df.columns)-1], axis=1 )
+#X = df.drop(df.columns[len(df.columns)-1], axis=1 )
+cols = df.shape[1]
+X = df.iloc[:,0:cols-1]
+Y = df.iloc[:,cols-1:cols]
 # for i in X:
 #     mean = X[i].mean()
 #     std = X[i].std()
 #     X[i] = ( X[i] - mean )/std
-X.insert(0, "Design", 1.0)
 
-Y = df.iloc[:,-1]
+#Y = df.iloc[:,-1]
 # mean = Y.mean(axis=0)
 # std = Y.std(axis=0)
-# Y = (Y-mean)/std
+# Y = (Y-mean)
 
-X = np.matrix(X.values, dtype=np.float64)
-Y = np.matrix(Y.values, dtype=np.float64)
-beta = np.matrix(np.zeros((1,X.shape[1])), dtype=np.float64)
+X = np.matrix(X.values)
+Y = np.matrix(Y.values)
+beta = np.matrix(np.zeros(cols-1))
 
 # Since we now have every module to calculate our cost function, we'll go ahead and define it.
 def costFunction(X, Y, beta):
@@ -59,21 +62,18 @@ def gradientDescent(X, Y, beta, alpha, iters):
     cost = []
 
     m = len(X)
-    betaT = beta.T
 
-    # print X
-    # print betaT
+    beta_temp = np.matrix(np.zeros(beta.shape))
+    parameters = len(X.T)
 
     for i in range(0, iters):
-        print (X * betaT)
-        betaT = betaT - (alpha/m)*(( (X * betaT) - Y.T).T * X).T #matrix solution
-        # hypothesis = np.dot(X, betaT)
-        # loss = hypothesis - Y.T
-        # gradient = np.dot(X.T, loss) / m
-        # print "gradient"
-        # print gradient
-        # betaT = betaT - alpha * gradient
-        beta = betaT.T
+        loss = ( X * beta.T ) - Y
+
+        for j in range(parameters):
+            gradient =  np.multiply(loss, X[:,j])
+            beta_temp[0,j] = beta[0,j] - ((alpha/m) * np.sum(gradient))
+
+        beta = beta_temp
         cost.append( costFunction(X, Y, beta) )
 
     return beta, cost
@@ -95,15 +95,21 @@ def gradientDescentRidge(X, Y, beta, alpha, itersreg, ridgeLambda):
 
     m = len(X)
 
-    betaT = beta.T
-    YT = Y.T
-    for i in range(0, itersreg):
-        hypothesis = np.dot(X, betaT)
-        loss = hypothesis - YT
-        gradient = np.dot(X.T, loss)/m
-        betaT = betaT - alpha * ( gradient + 2 * ridgeLambda * np.sum(betaT) )
-        beta = betaT.T
-        cost.append(costFunction(X, Y, beta))
+    beta_temp = np.matrix(np.zeros(beta.shape))
+    parameters = len(X.T)
+
+    for i in range(0, iters):
+        loss = ( X * beta.T ) - Y
+
+        for j in range(parameters):
+            gradient =  np.multiply(loss, X[:,j])
+            if j == 0:
+                beta_temp[0,j] = beta[0,j] - ((alpha/m) * np.sum(gradient))
+            else:
+                beta_temp[0,j] = beta[0,j] - ( (alpha/m) * np.sum(gradient) + ridgeLambda * (beta[0,j])/m)
+
+        beta = beta_temp
+        cost.append( costFunction(X, Y, beta) )
 
     return beta, cost
 
