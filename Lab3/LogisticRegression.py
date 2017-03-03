@@ -186,7 +186,7 @@ print
 # groundTruth = pd.Series(groundTruth)
 # prediction = pd.Series(predictionDf)
 
-conf = confusionMatrix(predictions, np.array(Y)[0]) #define
+conf = confusionMatrix(predictions, np.array(groundTruth)) #define
 print conf
 acc = accuracy(conf) #define
 print 'Accuracy = '+str(acc*100)+'%'
