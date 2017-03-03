@@ -96,7 +96,7 @@ def gradientDescent(X, Y, beta, alpha, iters):
 # Try out multiple values of 'alpha' and 'iters' so that you get the optimum result.
 #please try different values to see the results, but alpha=0.01 and iters=10000 are suggested.
 alpha = 0.01 #define
-iters = 1000 #define
+iters = 10000 #define
 result = gradientDescent(X, Y, beta, alpha, iters)
 print "beta"
 print result[0]

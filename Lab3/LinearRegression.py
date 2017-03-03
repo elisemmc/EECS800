@@ -31,7 +31,6 @@ Y = df.iloc[:,cols-1:cols]
 #     std = X[i].std()
 #     X[i] = ( X[i] - mean )/std
 
-#Y = df.iloc[:,-1]
 # mean = Y.mean(axis=0)
 # std = Y.std(axis=0)
 # Y = (Y-mean)
@@ -84,6 +83,8 @@ alpha = 0.01 #Define
 iters = 1000 #Define
 
 result = gradientDescent(X, Y, beta, alpha, iters)
+print "OLS beta"
+print result[0]
 
 # Implement the Ridge Regression regularization and report the change in coeffecients of the parameters.
 def gradientDescentRidge(X, Y, beta, alpha, itersreg, ridgeLambda):
@@ -129,8 +130,9 @@ def MSE(beta):
 alpha = alpha #Define
 itersreg = iters #Define
 ridgeLambda = 0.05 #Define
-beta.fill(0)
 regResult = gradientDescentRidge(X, Y, beta, alpha, itersreg, ridgeLambda)
+print "ridge beta"
+print regResult[0]
 
 plt.title("Error vs training")
 plt.ylabel("cost")
@@ -141,7 +143,7 @@ plt.legend()
 
 #MSE for beta with regularization
 beta = beta#Define
-print MSE(beta)
+print MSE(regResult[0])
 
 plt.show()
 
