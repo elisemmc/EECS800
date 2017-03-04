@@ -21,15 +21,11 @@ for i in X:
 X.insert(0, "Design", 1.0)
 Y = df.iloc[:,-1]  
 groundTruth = Y.copy() #df['Y']
-print groundTruth
 
 #Normalize only if you are using gradient descent. Apply standard deviation for normalization.
 X = np.matrix(X.values)  
 Y = np.matrix(Y.values)
 beta = np.matrix(np.zeros((1,X.shape[1])))
-
-print X.shape
-print Y.shape
 
 # Define a sigmoid function and return the value that has been calculated for z
 def sigmoid(z):
@@ -59,10 +55,6 @@ def costFunction(beta, X, Y):
     
     return cost
 
-print "beta"
-print beta
-print costFunction(beta, X, Y)
-
 # # Now , only define the gradient function that we can use in the SciPy's optimize module to find the optimal betas. 
 def gradient(beta, X, Y):
     '''
@@ -71,9 +63,6 @@ def gradient(beta, X, Y):
     grad = np.dot(hypothesis(beta,X)-Y, X)
 
     return grad
-
-print "grad"
-print gradient(beta, X, Y)
 
 # Define a gradient function that takes in beta, X and Y as parameters and returns the best betas and cost. 
 def gradientDescent(X, Y, beta, alpha, iters):
@@ -88,9 +77,6 @@ def gradientDescent(X, Y, beta, alpha, iters):
         beta = beta - alpha * gradient(beta,X,Y)
         cost[i] = costFunction(beta, X, Y)
 
-    # print "beta"
-    # print beta
-
     return beta, cost
 
 # Try out multiple values of 'alpha' and 'iters' so that you get the optimum result.
@@ -98,7 +84,7 @@ def gradientDescent(X, Y, beta, alpha, iters):
 alpha = 0.01 #define
 iters = 10000 #define
 result = gradientDescent(X, Y, beta, alpha, iters)
-print "beta"
+print "gradient descent beta"
 print result[0]
 
 # Optimize the parameters given functions to compute the cost and the gradients. We can use SciPy's optimization to do the same thing.
@@ -114,27 +100,14 @@ def predict(beta, X):
     '''
     This function returns a list of predictions calculated from the sigmoid using the best beta.
     '''
-    print "predict beta"
-    print beta
     h = np.array(hypothesis(beta,X))
-    print "h"
-    print h
     m = len(X)
-    print "m"
-    print m
     prediction = np.zeros(m)
 
     for i in range(m):
         prediction[i] = ( 1 if (h[0,i] > 0.5) else 0 )
 
-    print prediction
-    # print beta.T
-    # hypothesis = sigmoid(X * beta.T)
-    # #print hypothesis
-    # prediction = ( 1 if ( x > 0.5 ) else 0  for x in hypothesis )
-
     return prediction#define
-
 
 # Store the prediction in a list after calling the predict function with best betas and X.
 bestBeta = np.matrix(result[0])
@@ -168,23 +141,9 @@ def accuracy(confusionMatrix):
 #Please write a SHORT report and explain these results. Include the explanations for both logistic and linear regression
 #in the same PDF file. 
 
-print "best"
+print "best beta"
 print bestBeta
 predictions = predict(bestBeta, X)
-print "predictions"
-print predictions
-print "groundTruth"
-print np.array(groundTruth)
-# predictionDf = pd.DataFrame()
-# predictionDf['predictions'] = predictions
-
-print ""
-print "Y"
-print np.array(Y)[0]
-print 
-
-# groundTruth = pd.Series(groundTruth)
-# prediction = pd.Series(predictionDf)
 
 conf = confusionMatrix(predictions, np.array(groundTruth)) #define
 print conf
