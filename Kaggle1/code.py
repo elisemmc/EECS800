@@ -2,13 +2,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-class Functions:
+class linearRegression:
 
     def __init__(self, trainingFeatures, groundTruth):
         '''
         Initialize linear regression model with training data
         '''
-        numFeatures = df.shape[1]
+        numFeatures = trainingFeatures.shape[1]
 
         self.trainingFeatures = trainingFeatures
         self.beta = np.matrix(np.zeros(numFeatures))
@@ -22,6 +22,9 @@ class Functions:
     def setLambda(self, newLambda):
         self.ridgeLambda = newLambda
 
+    def zeroBeta(self):
+        self.beta = np.zeros(self.beta.shape)
+
     # Since we now have every module to calculate our cost function, we'll go ahead and define it.
     def costFunction(self, X, Y, beta):
         '''
@@ -34,7 +37,7 @@ class Functions:
         return cost
 
         # Define a Gradient Descent method that will update beta in every iteration and also update the cost.
-    def gradientDescent(self, X, Y, beta, alpha):
+    def gradientDescent(self, X, Y):
         '''
         Compute the gradient descent function.
         Return beta and the cost array.
@@ -43,23 +46,23 @@ class Functions:
 
         m = len(X)
 
-        beta_temp = np.matrix(np.zeros(beta.shape))
+        beta_temp = np.matrix(np.zeros(self.beta.shape))
         parameters = len(X.T)
 
-        for i in range(0, self.iters):
-            loss = ( X * beta.T ) - Y
+        for i in range(0, self.iterations):
+            loss = ( X * self.beta.T ) - Y
 
             for j in range(parameters):
                 gradient =  np.multiply(loss, X[:,j])
                 beta_temp[0,j] = self.beta[0,j] - ((self.alpha/m) * np.sum(gradient))
 
-            beta = beta_temp
-            cost.append( costFunction(X, Y, beta) )
+            self.beta = beta_temp
+            cost.append( self.costFunction(X, Y, self.beta) )
 
-        return beta, cost
+        return self.beta, cost
 
     # Implement the Ridge Regression regularization and report the change in coeffecients of the parameters.
-    def gradientDescentRidge(self, X, Y, beta, alpha, itersreg, ridgeLambda):
+    def gradientDescentRidge(self, X, Y):
         '''
         Compute the gradient descent function.
         Return beta and the cost array.
@@ -68,20 +71,20 @@ class Functions:
 
         m = len(X)
 
-        beta_temp = np.matrix(np.zeros(beta.shape))
+        beta_temp = np.matrix(np.zeros(self.beta.shape))
         parameters = len(X.T)
 
-        for i in range(0, iters):
+        for i in range(0, self.iterations):
             loss = ( X * beta.T ) - Y
 
             for j in range(parameters):
                 gradient =  np.multiply(loss, X[:,j])
                 if j == 0:
-                    beta_temp[0,j] = beta[0,j] - ((alpha/m) * np.sum(gradient))
+                    beta_temp[0,j] = self.beta[0,j] - ((self.alpha/m) * np.sum(gradient))
                 else:
-                    beta_temp[0,j] = beta[0,j] - ( (alpha/m) * np.sum(gradient) + ridgeLambda * (beta[0,j])/m)
+                    beta_temp[0,j] = self.beta[0,j] - ( (self.alpha/m) * np.sum(gradient) + self.ridgeLambda * (self.beta[0,j])/m)
 
-            beta = beta_temp
+            self.beta = beta_temp
             cost.append( costFunction(X, Y, beta) )
 
         return beta, cost
@@ -98,6 +101,15 @@ class Functions:
 
         return mse
 
+    def plotGraph(self, costs):
+        plt.title("Error vs training")
+        plt.ylabel("cost")
+        plt.xlabel("iterations")
+        for i in costs:
+            plt.plot(i)
+        #plt.legend()
+        plt.show()
+
 def main():
     #predictors = pd.read_csv('InputData/trainPredictors.csv', dtype=np.float64)
     df = pd.read_csv('HousingData_LinearRegression.csv', dtype=np.float64) #Load and preprocess the dataset.
@@ -113,18 +125,47 @@ def main():
 
     X = np.matrix(X.values)
     Y = np.matrix(Y.values)
+
+    model = linearRegression(X,Y)
+
+    result = model.gradientDescent(X,Y)
+
+    costs = []
+    costs.append(result[1])
+
+    trainPredictors = pd.read_csv('InputData/trainPredictors.csv', dtype=np.float64)
+    testPredictors = pd.read_csv('InputData/trainTargets.csv', dtype=np.float64)
     
-    model = Functions(predictors)
+    cols = df.shape[1]
+    pdIndex = trainPredictors.iloc[:,0]
+    pdX = trainPredictors.iloc[:,1:trainPredictors.shape[1]]
+    pdY = testPredictors.iloc[:,1:testPredictors.shape[1]]
 
+    pdX.insert(0, "Design", 1.0)
+    X = np.matrix(pdX.values)
+    Y = np.matrix(pdY.values)
+    index = np.matrix(pdIndex.values).transpose()
 
+    print "X"
+    print X.shape
 
+    print "Y"
+    print Y.shape
 
+    print "index"
+    print index.shape
 
+    model2 = linearRegression(X,Y)
+    lat = model2.gradientDescent(X,Y[0])
+    model2.zeroBeta()
+    lon = model2.gradientDescent(X,Y[1])
 
+    costs.append(lat[1])
+    costs.append(lon[1])
 
+    model.plotGraph(costs)
 
-
-
+main()
 #calls the main() method at program start
 #this can be done if you just like the idea of scripting it, but this is easier to read and edit if the program gets bigger
-if  __name__ =='__main__':main()
+#if  __name__ =='__main__':main()
