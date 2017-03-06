@@ -10,8 +10,8 @@ class linearRegression:
         '''
         numFeatures = trainingFeatures.shape[1]
 
-        self.alpha = 0.01
-        self.ridgeLambda = 0.05
+        self.alpha = 0.001
+        self.ridgeLambda = 0.1
         self.iterations = 1000
 
         self.trainingFeatures = trainingFeatures
@@ -132,7 +132,7 @@ class linearRegression:
         index = index.A1
         result[:,0] = np.array(latitude[:,0])
         result[:,1] = np.array(longitude[:,0])
-        #result = self.uncenterY(result)
+        result = self.uncenterY(result)
 
         columns = {'lat', 'long'}
         df = pd.DataFrame(result, columns=columns, index=index)
@@ -179,14 +179,14 @@ def main():
     lat = model.gradientDescent(X,cY[:,0])
     lon = model.gradientDescent(X,cY[:,1])
 
-    latRidge = model.gradientDescentRidge(X, Y[:,0])
-    lonRidge = model.gradientDescentRidge(X, Y[:,1])
+    latRidge = model.gradientDescentRidge(X, cY[:,0])
+    lonRidge = model.gradientDescentRidge(X, cY[:,1])
 
-    print model.MSE(model.predict(X, lat[0]) + model.Ymean[0,0], Y )
-    print model.MSE(model.predict(X, lon[0]) + model.Ymean[0,1], Y )
+    print model.MSE(model.predict(X, latRidge[0]) + model.Ymean[0,0], Y )
+    print model.MSE(model.predict(X, lonRidge[0]) + model.Ymean[0,1], Y )
 
-    model.genCSV( 'OLS_a0.01_i1000.csv', testIndex, model.predict(testX, lat[0]), model.predict(testX, lon[0]) )
-    model.genCSV( 'Ridge_a0.01_i1000_l0.05.csv', testIndex, model.predict(testX, latRidge[0]), model.predict(testX, lonRidge[0]))
+    #model.genCSV( 'OLS_a0.01_i1000.csv', testIndex, model.predict(testX, lat[0]), model.predict(testX, lon[0]) )
+    model.genCSV( 'Ridge_a0.001_i1000_l0.1.csv', testIndex, model.predict(testX, latRidge[0]), model.predict(testX, lonRidge[0]))
 
     # costs = []
 
