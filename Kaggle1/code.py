@@ -132,7 +132,7 @@ class linearRegression:
         index = index.A1
         result[:,0] = np.array(latitude[:,0])
         result[:,1] = np.array(longitude[:,0])
-        result = self.uncenterY(result)
+        #result = self.uncenterY(result)
 
         columns = {'lat', 'long'}
         df = pd.DataFrame(result, columns=columns, index=index)
@@ -179,8 +179,8 @@ def main():
     lat = model.gradientDescent(X,cY[:,0])
     lon = model.gradientDescent(X,cY[:,1])
 
-    latRidge = model.gradientDescentRidge(X, cY[:,0])
-    lonRidge = model.gradientDescentRidge(X, cY[:,1])
+    latRidge = model.gradientDescentRidge(X, Y[:,0])
+    lonRidge = model.gradientDescentRidge(X, Y[:,1])
 
     print model.MSE(model.predict(X, lat[0]) + model.Ymean[0,0], Y )
     print model.MSE(model.predict(X, lon[0]) + model.Ymean[0,1], Y )
