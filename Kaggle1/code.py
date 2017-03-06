@@ -10,11 +10,13 @@ class linearRegression:
         '''
         numFeatures = trainingFeatures.shape[1]
 
-        self.trainingFeatures = trainingFeatures
-        self.beta = np.matrix(np.zeros(numFeatures))
         self.alpha = 0.01
         self.ridgeLambda = 0.05
         self.iterations = 1000
+
+        self.trainingFeatures = trainingFeatures
+        self.beta = np.zeros((1,numFeatures))
+        self.Ymean = np.zeros((1,groundTruth.shape[1]))
 
     def setAlpha(self, newAlpha):
         self.alpha = newAlpha
@@ -24,6 +26,25 @@ class linearRegression:
 
     def zeroBeta(self):
         self.beta = np.zeros(self.beta.shape)
+
+    def centerY(self, Y):
+        centeredY = Y
+
+        for i in range(Y.shape[1]):
+            self.Ymean[0,i] = Y[:,i].mean()
+
+        for i in range(Y.shape[0]): 
+            centeredY[i,:] = Y[i,:] - self.Ymean
+        
+        return centeredY
+
+    def uncenterY(self, Y):
+        uncenteredY = Y
+        
+        for i in range(Y.shape[0]):
+            uncenteredY[i,:] = Y[i,:] + self.Ymean
+
+        return uncenteredY
 
     # Since we now have every module to calculate our cost function, we'll go ahead and define it.
     def costFunction(self, X, Y, beta):
@@ -46,20 +67,19 @@ class linearRegression:
 
         m = len(X)
 
-        beta_temp = np.matrix(np.zeros(self.beta.shape))
+        beta = self.beta
         parameters = len(X.T)
 
         for i in range(0, self.iterations):
-            loss = ( X * self.beta.T ) - Y
+            loss = ( X * beta.T ) - Y
 
             for j in range(parameters):
                 gradient =  np.multiply(loss, X[:,j])
-                beta_temp[0,j] = self.beta[0,j] - ((self.alpha/m) * np.sum(gradient))
+                beta[0,j] = beta[0,j] - ((self.alpha/m) * np.sum(gradient))
 
-            self.beta = beta_temp
-            cost.append( self.costFunction(X, Y, self.beta) )
+            cost.append( self.costFunction(X, Y, beta) )
 
-        return self.beta, cost
+        return beta, cost
 
     # Implement the Ridge Regression regularization and report the change in coeffecients of the parameters.
     def gradientDescentRidge(self, X, Y):
@@ -71,7 +91,7 @@ class linearRegression:
 
         m = len(X)
 
-        beta_temp = np.matrix(np.zeros(self.beta.shape))
+        beta = self.beta
         parameters = len(X.T)
 
         for i in range(0, self.iterations):
@@ -80,26 +100,46 @@ class linearRegression:
             for j in range(parameters):
                 gradient =  np.multiply(loss, X[:,j])
                 if j == 0:
-                    beta_temp[0,j] = self.beta[0,j] - ((self.alpha/m) * np.sum(gradient))
+                    beta[0,j] = beta[0,j] - ((self.alpha/m) * np.sum(gradient))
                 else:
-                    beta_temp[0,j] = self.beta[0,j] - ( (self.alpha/m) * np.sum(gradient) + self.ridgeLambda * (self.beta[0,j])/m)
+                    beta[0,j] = beta[0,j] - ( (self.alpha/m) * np.sum(gradient) + self.ridgeLambda * (beta[0,j])/m)
 
-            self.beta = beta_temp
-            cost.append( costFunction(X, Y, beta) )
+            cost.append( self.costFunction(X, Y, beta) )
 
         return beta, cost
 
-    # Define alpha, number of iterations and lambda of your choice that minimizes the cost function and use them to 
-    # call to gradientDescent function. Plot the cost graph with iterations titled "Error vs training" with and without 
-    # regularization(y axis labeled as cost and x axix labeled as iterations). Then, calculate the MSE.
-    def MSE(self, beta):
+    def MSE(self, X, Y):
         '''
-        Compute and return the MSE.
+        Compute and return MSE
         '''
-        element = np.power( ( X*beta.T - Y ), 2 )
-        mse = np.sum( element ) / ( len(X) )
+        element = np.power((X - Y), 2)
+        mse = np.sum(element)/ len(X)
 
         return mse
+
+    def predict(self, X, beta):
+        prediction = np.zeros((X.shape[0],1))
+        for i in range(X.shape[0]):
+            prediction[i,0] = np.dot( X[i,:], beta[0,:].transpose() )
+
+        return prediction
+
+    def genCSV(self, name, index, latitude, longitude):
+        '''
+        Not a general function, just tacks together the specific case for this Kaggle
+        '''
+        result = np.zeros((index.shape[0], 2))
+        index = index.A1
+        result[:,0] = np.array(latitude[:,0])
+        result[:,1] = np.array(longitude[:,0])
+        result = self.uncenterY(result)
+
+        columns = {'lat', 'long'}
+        df = pd.DataFrame(result, columns=columns, index=index)
+        df.index.name = 'index'
+        df.to_csv(name)
+
+        return result
 
     def plotGraph(self, costs):
         plt.title("Error vs training")
@@ -111,59 +151,52 @@ class linearRegression:
         plt.show()
 
 def main():
-    #predictors = pd.read_csv('InputData/trainPredictors.csv', dtype=np.float64)
-    df = pd.read_csv('HousingData_LinearRegression.csv', dtype=np.float64) #Load and preprocess the dataset.
-    for i in df:
-        mean = df[i].mean()
-        std = df[i].std()
-        df[i] = ( df[i] - mean )/std
-    df.insert(0, "Design", 1.0)
-
-    cols = df.shape[1]
-    X = df.iloc[:,0:cols-1]
-    Y = df.iloc[:,cols-1:cols]
-
-    X = np.matrix(X.values)
-    Y = np.matrix(Y.values)
-
-    model = linearRegression(X,Y)
-
-    result = model.gradientDescent(X,Y)
-
-    costs = []
-    costs.append(result[1])
-
-    trainPredictors = pd.read_csv('InputData/trainPredictors.csv', dtype=np.float64)
-    testPredictors = pd.read_csv('InputData/trainTargets.csv', dtype=np.float64)
+    trainPredictors = pd.read_csv('InputData/trainPredictors.csv')
+    trainTargets = pd.read_csv('InputData/trainTargets.csv')
+    testPredictors = pd.read_csv('InputData/testPredictors.csv')
     
-    cols = df.shape[1]
     pdIndex = trainPredictors.iloc[:,0]
-    pdX = trainPredictors.iloc[:,1:trainPredictors.shape[1]]
-    pdY = testPredictors.iloc[:,1:testPredictors.shape[1]]
-
+    pdX = trainPredictors.iloc[:,1:]
+    pdY = trainTargets.iloc[:,1:]
     pdX.insert(0, "Design", 1.0)
+
+    pdTestIndex = testPredictors.iloc[:,0]
+    pdTestX = testPredictors.iloc[:,1:]
+    pdTestX.insert(0, "Design", 1.0)
+
+    
     X = np.matrix(pdX.values)
     Y = np.matrix(pdY.values)
     index = np.matrix(pdIndex.values).transpose()
 
-    print "X"
-    print X.shape
+    testX = np.matrix(pdTestX.values)
+    testIndex = np.matrix(pdTestIndex.values).transpose()
 
-    print "Y"
-    print Y.shape
+    model = linearRegression(X,Y)
 
-    print "index"
-    print index.shape
+    cY = model.centerY(Y)
 
-    model2 = linearRegression(X,Y)
-    lat = model2.gradientDescent(X,Y[0])
-    model2.zeroBeta()
-    lon = model2.gradientDescent(X,Y[1])
+    lat = model.gradientDescent(X,cY[:,0])
+    lon = model.gradientDescent(X,cY[:,1])
 
-    costs.append(lat[1])
-    costs.append(lon[1])
+    latRidge = model.gradientDescentRidge(X, cY[:,0])
+    lonRidge = model.gradientDescentRidge(X, cY[:,1])
 
-    model.plotGraph(costs)
+    print model.MSE(model.predict(X, lat[0]) + model.Ymean[0,0], Y )
+    print model.MSE(model.predict(X, lon[0]) + model.Ymean[0,1], Y )
+
+    model.genCSV( 'OLS_a0.01_i1000.csv', testIndex, model.predict(testX, lat[0]), model.predict(testX, lon[0]) )
+    model.genCSV( 'Ridge_a0.01_i1000_l0.05.csv', testIndex, model.predict(testX, latRidge[0]), model.predict(testX, lonRidge[0]))
+
+    # costs = []
+
+    # costs.append(lat[1])
+    # costs.append(lon[1])
+
+    # costs.append(latRidge[1])
+    # costs.append(lonRidge[1])
+
+    # model.plotGraph(costs)
 
 main()
 #calls the main() method at program start
