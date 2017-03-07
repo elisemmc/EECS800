@@ -178,6 +178,7 @@ def genCSV(name, index, prediction):
     columns = {'lat', 'long'}
     df = pd.DataFrame(prediction, columns=columns, index=index)
     df.index.name = 'index'
+    name = 'outputs/' + name
     df.to_csv(name)
 
 def main():
