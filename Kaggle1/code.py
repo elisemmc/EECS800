@@ -267,7 +267,7 @@ def main():
     '''
     https://github.com/scikit-learn/scikit-learn/blob/14031f6/sklearn/linear_model/ridge.py#L1105
     '''
-    sciLinReg = LinearRegression()
+    sciLinReg = LinearRegression(fit_intercept=True, normalize=False, copy_X=True, n_jobs=1)
     sciLinReg.fit(X, Y[:,0])
     predict0 = sciLinReg.predict(Xte)
     sciLinReg.fit(X, Y[:,1])
