@@ -268,40 +268,43 @@ def main():
     https://github.com/scikit-learn/scikit-learn/blob/14031f6/sklearn/linear_model/ridge.py#L1105
     '''
     sciLinReg = LinearRegression()
-    sciLinReg.fit(X, Y)
-    predict = sciLinReg.predict(Xte)
+    sciLinReg.fit(X, Y[:,0])
+    predict0 = sciLinReg.predict(Xte)
+    sciLinReg.fit(X, Y[:,1])
+    predict1 = sciLinReg.predict(Xte)
 
     print "Sci LinearRegression"
-    print "Latitude MSE:  %f" % model.MSE(predict, Yte )
-    print "Longitude MSE: %f" % model.MSE(predict, Yte )
+    print "Latitude MSE:  %f" % model.MSE(predict0, Yte )
+    print "Longitude MSE: %f" % model.MSE(predict1, Yte )
     print ""
 
-    predict = sciLinReg.predict(testX)
-    genCSV( 'SciLinReg.csv', testIndex, predict )     
+    predict0 = sciLinReg.predict(testX)
+    predict1 = sciLinReg.predict(testX)
+    genCSV4( 'SciLinReg.csv', testIndex, predict0, predict1 )     
 
-    sciRidge = Ridge()
-    sciRidge.fit(X, Y)
-    predict = sciRidge.predict(Xte)
+    # sciRidge = Ridge()
+    # sciRidge.fit(Xtr, Ytr)
+    # predict = sciRidge.predict(Xte)
 
-    print "Sci Ridge"
-    print "Latitude MSE:  %f" % model.MSE(predict, Yte )
-    print "Longitude MSE: %f" % model.MSE(predict, Yte )
-    print ""
+    # print "Sci Ridge"
+    # print "Latitude MSE:  %f" % model.MSE(predict, Yte )
+    # print "Longitude MSE: %f" % model.MSE(predict, Yte )
+    # print ""
 
-    predict = sciLinReg.predict(testX)
-    genCSV( 'SciRidge.csv', testIndex, predict ) 
+    # predict = sciLinReg.predict(testX)
+    # genCSV( 'SciRidge.csv', testIndex, predict ) 
 
-    sciRCV = RidgeCV()
-    sciRCV.fit(X, Y)
-    predict = sciRCV.predict(Xte)
+    # sciRCV = RidgeCV()
+    # sciRCV.fit(Xtr, Ytr)
+    # predict = sciRCV.predict(Xte)
 
-    print "Sci Ridge CV"
-    print "Latitude MSE:  %f" % model.MSE(predict, Yte )
-    print "Longitude MSE: %f" % model.MSE(predict, Yte )
-    print ""
+    # print "Sci Ridge CV"
+    # print "Latitude MSE:  %f" % model.MSE(predict, Yte )
+    # print "Longitude MSE: %f" % model.MSE(predict, Yte )
+    # print ""
 
-    predict = sciRCV.predict(testX)
-    genCSV( 'SciRidgeCV.csv', testIndex, predict )
+    # predict = sciRCV.predict(testX)
+    # genCSV( 'SciRidgeCV.csv', testIndex, predict )
 
 
     # model.genCSV( 'Ridge_testing.csv', testIndex, model.predict(testX, latRidge[0]), model.predict(testX, lonRidge[0]))
