@@ -1,8 +1,11 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import RidgeCV
 
-class linearRegression:
+class linearReg:
 
     def __init__(self, trainingFeatures, groundTruth):
         '''
@@ -10,8 +13,8 @@ class linearRegression:
         '''
         numFeatures = trainingFeatures.shape[1]
 
-        self.alpha = 0.001
-        self.ridgeLambda = 0.1
+        self.alpha = 0.0001
+        self.ridgeLambda = 0.9
         self.iterations = 1000
 
         self.trainingFeatures = trainingFeatures
@@ -57,7 +60,7 @@ class linearRegression:
 
         return cost
 
-        # Define a Gradient Descent method that will update beta in every iteration and also update the cost.
+    # Define a Gradient Descent method that will update beta in every iteration and also update the cost.
     def gradientDescent(self, X, Y):
         '''
         Compute the gradient descent function.
@@ -81,8 +84,20 @@ class linearRegression:
 
         return beta, cost
 
+    def hypothesis(beta, X):
+        temp = np.multiply(beta, X.transpose())
+        return temp
+
+    def gradient(beta, X, Y):
+        '''
+        This function returns the gradient calucated.
+        '''
+        grad = np.dot(hypothesis(beta,X)-Y, X)
+
+        return grad
+
     # Implement the Ridge Regression regularization and report the change in coeffecients of the parameters.
-    def gradientDescentRidge(self, X, Y):
+    def gradientDescentRidge(self, X, Y, beta):
         '''
         Compute the gradient descent function.
         Return beta and the cost array.
@@ -91,16 +106,23 @@ class linearRegression:
 
         m = len(X)
 
-        beta = self.beta
+        if len(beta) == 0:
+            beta = self.beta
+
         parameters = len(X.T)
 
         for i in range(0, self.iterations):
             loss = ( X * beta.T ) - Y
 
             for j in range(parameters):
-                gradient =  np.multiply(loss, X[:,j])
+                # Tried removing outliers....didn't work
+                # Xtemp = np.multiply(X[:,j], (X[:,j] > -4).astype(int))
+                # Xtemp = np.multiply(X[:,j], (X[:,j] < 4).astype(int))
+
+                gradient =  np.multiply(loss, X)
+                
                 if j == 0:
-                    beta[0,j] = beta[0,j] - ((self.alpha/m) * np.sum(gradient))
+                    beta[0,j] = beta[0,j] - ( (self.alpha/m) * np.sum(gradient) )
                 else:
                     beta[0,j] = beta[0,j] - ( (self.alpha/m) * np.sum(gradient) + self.ridgeLambda * (beta[0,j])/m)
 
@@ -124,23 +146,6 @@ class linearRegression:
 
         return prediction
 
-    def genCSV(self, name, index, latitude, longitude):
-        '''
-        Not a general function, just tacks together the specific case for this Kaggle
-        '''
-        result = np.zeros((index.shape[0], 2))
-        index = index.A1
-        result[:,0] = np.array(latitude[:,0])
-        result[:,1] = np.array(longitude[:,0])
-        result = self.uncenterY(result)
-
-        columns = {'lat', 'long'}
-        df = pd.DataFrame(result, columns=columns, index=index)
-        df.index.name = 'index'
-        df.to_csv(name)
-
-        return result
-
     def plotGraph(self, costs):
         plt.title("Error vs training")
         plt.ylabel("cost")
@@ -149,6 +154,22 @@ class linearRegression:
             plt.plot(i)
         #plt.legend()
         plt.show()
+
+def genCSV(self, name, index, latitude, longitude):
+    '''
+    Not a general function, just tacks together the specific case for this Kaggle
+    '''
+    result = np.zeros((index.shape[0], 2))
+    index = index.A1
+    result[:,0] = np.array(latitude[:,0])
+    result[:,1] = np.array(longitude[:,0])
+
+    columns = {'lat', 'long'}
+    df = pd.DataFrame(result, columns=columns, index=index)
+    df.index.name = 'index'
+    df.to_csv(name)
+
+    return result
 
 def main():
     trainPredictors = pd.read_csv('InputData/trainPredictors.csv')
@@ -172,21 +193,97 @@ def main():
     testX = np.matrix(pdTestX.values)
     testIndex = np.matrix(pdTestIndex.values).transpose()
 
-    model = linearRegression(X,Y)
+    model = linearReg(X,Y)
 
     cY = model.centerY(Y)
 
-    lat = model.gradientDescent(X,cY[:,0])
-    lon = model.gradientDescent(X,cY[:,1])
+    Xtr = X[:400,:]
+    Xte = X[400:,:]
 
-    latRidge = model.gradientDescentRidge(X, cY[:,0])
-    lonRidge = model.gradientDescentRidge(X, cY[:,1])
+    Ytr = Y[:400,:]
+    cYtr = Y[:400,:]
+    Yte = Y[400:,:]
 
-    print model.MSE(model.predict(X, latRidge[0]) + model.Ymean[0,0], Y )
-    print model.MSE(model.predict(X, lonRidge[0]) + model.Ymean[0,1], Y )
+    # print "alpha:      %f" % model.alpha
+    # print "iterations: %d" % model.iterations
+    # print ""
 
-    #model.genCSV( 'OLS_a0.01_i1000.csv', testIndex, model.predict(testX, lat[0]), model.predict(testX, lon[0]) )
-    model.genCSV( 'Ridge_a0.001_i1000_l0.1.csv', testIndex, model.predict(testX, latRidge[0]), model.predict(testX, lonRidge[0]))
+    # lat = model.gradientDescent(Xtr, cYtr[:,0])
+    # lon = model.gradientDescent(Xtr, cYtr[:,1])
+
+    # print "OLS"
+    # print "Latitude MSE:  %f" % model.MSE(model.predict(Xte, lat[0]) + model.Ymean[0,0], Yte )
+    # print "Longitude MSE: %f" % model.MSE(model.predict(Xte, lon[0]) + model.Ymean[0,1], Yte )
+    # print ""
+    latBeta = model.beta
+    lonBeta = model.beta
+
+    latMSE = model.MSE(model.predict(Xte, latBeta) + model.Ymean[0,0], Yte )
+    lonMSE = model.MSE(model.predict(Xte, latBeta) + model.Ymean[0,1], Yte )
+
+    for i in range(1000):
+        prevLatBeta = latBeta
+        prevLonBeta = lonBeta
+
+        prevLatMSE = latMSE
+        prevLonMSE = lonMSE
+
+        latRidge = model.gradientDescentRidge(Xtr, cYtr[:,0], latBeta)
+        lonRidge = model.gradientDescentRidge(Xtr, cYtr[:,1], lonBeta)
+
+        #make sure to recenter the y's !!!
+        latMSE = model.MSE(model.predict(Xte, latRidge[0]) + model.Ymean[0,0], Yte )
+        lonMSE = model.MSE(model.predict(Xte, lonRidge[0]) + model.Ymean[0,1], Yte )
+
+        if latMSE < prevLatMSE:
+            latBeta = latRidge[0]
+
+        if lonMSE < prevLonMSE:
+            latBeta = lonRidge[0]
+
+        if ( latMSE > prevLatMSE ) and ( lonMSE > prevLonMSE ):
+            break
+
+        print "Ridge (iterations: %f)" % (i*model.iterations)
+        print "Lambda: %f    Latitude MSE: %f    Longitude MSE: %f" % (model.ridgeLambda, latMSE, lonMSE)
+        print ""
+
+    model.genCSV( 'Ridge_a0.0001_iter1000000_l0.9_if.csv', testIndex, model.predict(testX, latBeta), model.predict(testX, lonBeta) )
+
+
+    ####
+    '''
+    https://github.com/scikit-learn/scikit-learn/blob/14031f6/sklearn/linear_model/ridge.py#L1105
+    '''
+    sciLinReg = LinearRegression()
+    sciLinReg.fit(Xtr, Ytr)
+    predict = sciLinReg.predict(Xte)
+
+    print "Sci LinearRegression"
+    print "Latitude MSE:  %f" % model.MSE(predict, Yte )
+    print "Longitude MSE: %f" % model.MSE(predict, Yte )
+    print ""
+
+    sciRidge = Ridge()
+    sciRidge.fit(Xtr, Ytr)
+    predict = sciRidge.predict(Xte)
+
+    print "Sci Ridge"
+    print "Latitude MSE:  %f" % model.MSE(predict, Yte )
+    print "Longitude MSE: %f" % model.MSE(predict, Yte )
+    print ""
+
+    sciRCV = RidgeCV()
+    sciRCV.fit(Xtr, Ytr)
+    predict = sciRCV.predict(Xte)
+
+    print "Sci Ridge CV"
+    print "Latitude MSE:  %f" % model.MSE(predict, Yte )
+    print "Longitude MSE: %f" % model.MSE(predict, Yte )
+    print ""
+
+
+    # model.genCSV( 'Ridge_testing.csv', testIndex, model.predict(testX, latRidge[0]), model.predict(testX, lonRidge[0]))
 
     # costs = []
 
@@ -197,6 +294,11 @@ def main():
     # costs.append(lonRidge[1])
 
     # model.plotGraph(costs)
+    
+    # i = 16
+    # plt.plot(Y[:,0],X[:,i],'o')
+    # plt.plot(Y[:,1],X[:,i],'o')
+    # plt.show()
 
 main()
 #calls the main() method at program start
