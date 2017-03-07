@@ -155,7 +155,7 @@ class linearReg:
         #plt.legend()
         plt.show()
 
-def genCSV(self, name, index, latitude, longitude):
+def genCSV4(name, index, latitude, longitude):
     '''
     Not a general function, just tacks together the specific case for this Kaggle
     '''
@@ -169,7 +169,16 @@ def genCSV(self, name, index, latitude, longitude):
     df.index.name = 'index'
     df.to_csv(name)
 
-    return result
+def genCSV(name, index, prediction):
+    '''
+    Not a general function, just tacks together the specific case for this Kaggle
+    '''
+    index = index.A1
+
+    columns = {'lat', 'long'}
+    df = pd.DataFrame(prediction, columns=columns, index=index)
+    df.index.name = 'index'
+    df.to_csv(name)
 
 def main():
     trainPredictors = pd.read_csv('InputData/trainPredictors.csv')
@@ -215,16 +224,16 @@ def main():
     # print "Latitude MSE:  %f" % model.MSE(model.predict(Xte, lat[0]) + model.Ymean[0,0], Yte )
     # print "Longitude MSE: %f" % model.MSE(model.predict(Xte, lon[0]) + model.Ymean[0,1], Yte )
     # print ""
+
+    '''
+    # This is my RidgeRegression
     latBeta = model.beta
     lonBeta = model.beta
 
     latMSE = model.MSE(model.predict(Xte, latBeta) + model.Ymean[0,0], Yte )
-    lonMSE = model.MSE(model.predict(Xte, latBeta) + model.Ymean[0,1], Yte )
+    lonMSE = model.MSE(model.predict(Xte, lonBeta) + model.Ymean[0,1], Yte )
 
-    for i in range(1000):
-        prevLatBeta = latBeta
-        prevLonBeta = lonBeta
-
+    for i in range(78):
         prevLatMSE = latMSE
         prevLonMSE = lonMSE
 
@@ -239,16 +248,17 @@ def main():
             latBeta = latRidge[0]
 
         if lonMSE < prevLonMSE:
-            latBeta = lonRidge[0]
+            lonBeta = lonRidge[0]
 
-        if ( latMSE > prevLatMSE ) and ( lonMSE > prevLonMSE ):
+        if ( ( latMSE > prevLatMSE ) and ( lonMSE > prevLonMSE ) ):
             break
 
         print "Ridge (iterations: %f)" % (i*model.iterations)
         print "Lambda: %f    Latitude MSE: %f    Longitude MSE: %f" % (model.ridgeLambda, latMSE, lonMSE)
         print ""
 
-    model.genCSV( 'Ridge_a0.0001_iter1000000_l0.9_if.csv', testIndex, model.predict(testX, latBeta), model.predict(testX, lonBeta) )
+    genCSV4( 'Ridge_a0.0001_iter78000_l0.9.csv', testIndex, model.predict(testX, latBeta), model.predict(testX, lonBeta) )
+    '''
 
 
     ####
@@ -264,6 +274,9 @@ def main():
     print "Longitude MSE: %f" % model.MSE(predict, Yte )
     print ""
 
+    predict = sciLinReg.predict(testX)
+    genCSV( 'SciLinReg.csv', testIndex, predict )     
+
     sciRidge = Ridge()
     sciRidge.fit(Xtr, Ytr)
     predict = sciRidge.predict(Xte)
@@ -273,6 +286,9 @@ def main():
     print "Longitude MSE: %f" % model.MSE(predict, Yte )
     print ""
 
+    predict = sciLinReg.predict(testX)
+    genCSV( 'SciRidge.csv', testIndex, predict ) 
+
     sciRCV = RidgeCV()
     sciRCV.fit(Xtr, Ytr)
     predict = sciRCV.predict(Xte)
@@ -281,6 +297,9 @@ def main():
     print "Latitude MSE:  %f" % model.MSE(predict, Yte )
     print "Longitude MSE: %f" % model.MSE(predict, Yte )
     print ""
+
+    predict = sciRCV.predict(testX)
+    genCSV( 'SciRidgeCV.csv', testIndex, predict )
 
 
     # model.genCSV( 'Ridge_testing.csv', testIndex, model.predict(testX, latRidge[0]), model.predict(testX, lonRidge[0]))
@@ -296,7 +315,7 @@ def main():
     # model.plotGraph(costs)
     
     # i = 16
-    # plt.plot(Y[:,0],X[:,i],'o')
+    # plt.plot(Y[:,0],Y[:,1],'o')
     # plt.plot(Y[:,1],X[:,i],'o')
     # plt.show()
 
