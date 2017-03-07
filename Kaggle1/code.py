@@ -167,6 +167,7 @@ def genCSV4(name, index, latitude, longitude):
     columns = {'lat', 'long'}
     df = pd.DataFrame(result, columns=columns, index=index)
     df.index.name = 'index'
+    name = 'outputs/' + name
     df.to_csv(name)
 
 def genCSV(name, index, prediction):
@@ -267,7 +268,7 @@ def main():
     https://github.com/scikit-learn/scikit-learn/blob/14031f6/sklearn/linear_model/ridge.py#L1105
     '''
     sciLinReg = LinearRegression()
-    sciLinReg.fit(Xtr, Ytr)
+    sciLinReg.fit(X, Y)
     predict = sciLinReg.predict(Xte)
 
     print "Sci LinearRegression"
@@ -279,7 +280,7 @@ def main():
     genCSV( 'SciLinReg.csv', testIndex, predict )     
 
     sciRidge = Ridge()
-    sciRidge.fit(Xtr, Ytr)
+    sciRidge.fit(X, Y)
     predict = sciRidge.predict(Xte)
 
     print "Sci Ridge"
@@ -291,7 +292,7 @@ def main():
     genCSV( 'SciRidge.csv', testIndex, predict ) 
 
     sciRCV = RidgeCV()
-    sciRCV.fit(Xtr, Ytr)
+    sciRCV.fit(X, Y)
     predict = sciRCV.predict(Xte)
 
     print "Sci Ridge CV"
