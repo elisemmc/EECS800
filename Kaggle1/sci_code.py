@@ -79,8 +79,8 @@ def main():
         # print i
         # if i==(5 or 7):
         #     i=i+1
-    X = np.delete(X_orig, [5,7], axis=1)
-    X_final = np.delete(X_final_orig, [5,7], axis=1)
+    X = X_orig#np.delete(X_orig, [5,7], axis=1)
+    X_final = X_final_orig#np.delete(X_final_orig, [5,7], axis=1)
 
     #F.write(str(i)+'\n')
 
@@ -92,7 +92,7 @@ def main():
     '''
     Training and Testing Data
     '''
-    X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size=0.5, random_state=17)
+    X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size=0.1, random_state=0)
 
     '''
     Ridge
@@ -120,7 +120,7 @@ def main():
         fit_intercept=True,
         cv = 11,
         normalize=False )
-    sciRidgeCV.fit(X, Y)
+    sciRidgeCV.fit(X_test, Y_test)
     predict_test = sciRidgeCV.predict(X_test)
     score = sciRidgeCV.score(X_test,Y_test)
     if score >= s_RidgeCV + thresh:
@@ -137,16 +137,16 @@ def main():
         fit_intercept=True,
         normalize=False,
         cv=12,
-        tol = 0.01 )
-    sciLasso.fit(X_train, Y_train)
+        tol = 0.0001 )
+    sciLasso.fit(X, Y)
     predict_test = sciLasso.predict(X_test)
     score = sciLasso.score(X_test,Y_test)
     if score >= s_LassoCV + thresh:
         s = "Sci LassoCV            (Score: %f)" % (score)
         print s
         F.write(s + '\n')
-    # predict_final = sciLasso.predict(X_final)
-    # genCSV( 'sciLasso.csv', index_final, predict_final )
+    predict_final = sciLasso.predict(X_final)
+    genCSV( 'sciLasso.csv', index_final, predict_final )
 
 
 
