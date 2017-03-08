@@ -79,8 +79,8 @@ def main():
         # print i
         # if i==(5 or 7):
         #     i=i+1
-    X =X_orig# np.delete(X_orig, [5,7], axis=1)
-    X_final = X_final_orig#np.delete(X_final_orig, i, axis=1)
+    X = np.delete(X_orig, [5,7], axis=1)
+    X_final = np.delete(X_final_orig, [5,7], axis=1)
 
     #F.write(str(i)+'\n')
 
@@ -120,7 +120,7 @@ def main():
         fit_intercept=True,
         cv = 11,
         normalize=False )
-    sciRidgeCV.fit(X_orig, Y)
+    sciRidgeCV.fit(X, Y)
     predict_test = sciRidgeCV.predict(X_test)
     score = sciRidgeCV.score(X_test,Y_test)
     if score >= s_RidgeCV + thresh:
