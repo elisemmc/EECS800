@@ -1,0 +1,182 @@
+0
+1
+Sci Ridge              1 (Score: 0.201176)
+Sci RidgeCV            1 (Score: 0.200895)
+2
+Sci Ridge              2 (Score: 0.201436)
+Sci RidgeCV            2 (Score: 0.201191)
+3
+Sci Ridge              3 (Score: 0.201036)
+Sci RidgeCV            3 (Score: 0.200704)
+Sci RidgeCV (defaults) 3 (Score: 0.144420)
+Sci LassoCV            3 (Score: 0.183899)
+4
+5
+Sci Ridge              5 (Score: 0.200801)
+Sci LassoCV            5 (Score: 0.199510)
+6
+Sci Ridge              6 (Score: 0.200661)
+Sci RidgeCV            6 (Score: 0.200357)
+Sci RidgeCV (defaults) 6 (Score: 0.142609)
+7
+Sci Ridge              7 (Score: 0.202665)
+Sci RidgeCV            7 (Score: 0.202665)
+Sci RidgeCV (defaults) 7 (Score: 0.148026)
+Sci LassoCV            7 (Score: 0.186600)
+8
+9
+10
+11
+Sci LassoCV            11 (Score: 0.183899)
+12
+Sci RidgeCV (defaults) 12 (Score: 0.142021)
+13
+Sci LassoCV            13 (Score: 0.183298)
+14
+Sci RidgeCV (defaults) 14 (Score: 0.144335)
+15
+Sci LassoCV            15 (Score: 0.183899)
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+Sci Ridge              30 (Score: 0.202053)
+Sci RidgeCV            30 (Score: 0.201730)
+31
+32
+Sci LassoCV            32 (Score: 0.189763)
+33
+34
+Sci RidgeCV (defaults) 34 (Score: 0.152541)
+35
+36
+37
+38
+39
+Sci RidgeCV (defaults) 39 (Score: 0.141692)
+Sci LassoCV            39 (Score: 0.183899)
+40
+41
+Sci RidgeCV (defaults) 41 (Score: 0.143129)
+42
+Sci Ridge              42 (Score: 0.201216)
+Sci RidgeCV            42 (Score: 0.200878)
+Sci RidgeCV (defaults) 42 (Score: 0.145310)
+43
+44
+Sci RidgeCV (defaults) 44 (Score: 0.141814)
+Sci LassoCV            44 (Score: 0.183899)
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+Sci RidgeCV (defaults) 62 (Score: 0.144377)
+63
+64
+Sci LassoCV            64 (Score: 0.183899)
+65
+Sci Ridge              65 (Score: 0.200968)
+Sci RidgeCV            65 (Score: 0.200634)
+Sci RidgeCV (defaults) 65 (Score: 0.149375)
+66
+Sci RidgeCV (defaults) 66 (Score: 0.149238)
+67
+68
+69
+Sci RidgeCV (defaults) 69 (Score: 0.144821)
+Sci LassoCV            69 (Score: 0.183921)
+70
+Sci Ridge              70 (Score: 0.200631)
+Sci RidgeCV            70 (Score: 0.200372)
+71
+Sci RidgeCV (defaults) 71 (Score: 0.145530)
+72
+Sci RidgeCV (defaults) 72 (Score: 0.150613)
+73
+74
+Sci RidgeCV (defaults) 74 (Score: 0.142776)
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+Sci RidgeCV (defaults) 89 (Score: 0.142012)
+90
+91
+92
+Sci RidgeCV (defaults) 92 (Score: 0.143895)
+Sci LassoCV            92 (Score: 0.183175)
+93
+Sci Ridge              93 (Score: 0.202704)
+Sci RidgeCV            93 (Score: 0.202704)
+Sci RidgeCV (defaults) 93 (Score: 0.157185)
+Sci LassoCV            93 (Score: 0.183899)
+94
+Sci RidgeCV (defaults) 94 (Score: 0.147024)
+Sci LassoCV            94 (Score: 0.185876)
+95
+96
+Sci RidgeCV (defaults) 96 (Score: 0.149891)
+Sci LassoCV            96 (Score: 0.186301)
+97
+Sci LassoCV            97 (Score: 0.183899)
+98
+Sci LassoCV            98 (Score: 0.183899)
+99
+Sci RidgeCV (defaults) 99 (Score: 0.141767)
+100
+Sci RidgeCV (defaults) 100 (Score: 0.142931)
+Sci LassoCV            100 (Score: 0.185217)
+101
+Sci RidgeCV (defaults) 101 (Score: 0.143414)
+102
+103
+104
+Sci RidgeCV (defaults) 104 (Score: 0.143888)
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116

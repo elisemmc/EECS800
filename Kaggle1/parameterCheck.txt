@@ -1,0 +1,3 @@
+Sci RidgeCV            0 (Score: 0.198249)
+Sci LassoCV            0 (Score: 0.208077)
+Sci Ridge              1 (Score: 0.198187)
