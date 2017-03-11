@@ -209,7 +209,7 @@ def main():
         '''
         Training and Testing Data
         '''
-        X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size=0.3, random_state=i)
+        X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size=0.2, random_state=i)
 
         '''
         Testing Models
@@ -219,7 +219,7 @@ def main():
         #models.ridge(filename)
         #filename = 'RidgeCV_quad_test0.3_rand' + str(i)
         #models.ridgeCV(filename)
-        filename = 'LassoCV_quad_test0.3_rand' + str(i)
+        filename = 'LassoCV_quad_test0.2_rand' + str(i)
         models.lassoCV(filename)
         #models.SGD()
 
