@@ -108,7 +108,7 @@ class Models:
             tol = 0.001 )
         sciLasso.fit(self.X_train, self.Y_train)
         predict_test = sciLasso.predict(self.X_test)
-        MSE = mean_squared_error(self.X_test,self.Y_test)
+        MSE = mean_squared_error(predict_test,self.Y_test)
         s = "Sci LassoCV            (MSE: %f)" % (MSE)
         print s
         predict_final = sciLasso.predict(self.X_final)
@@ -201,25 +201,26 @@ def main():
     '''
     # F=open('blah.txt', 'w')#('parameterCheck(rm5rm7rm30)(0.4).txt', 'a')#
 
-    X = X_orig #np.delete(X_orig, [5,7], axis=1)
-    X_final = X_final_orig #np.delete(X_final_orig, [5,7], axis=1)
+    X = np.hstack((X_orig, np.square(X_orig))) #np.delete(X_orig, [5,7], axis=1)
+    X_final = np.hstack((X_final_orig, np.square(X_final_orig))) #np.delete(X_final_orig, [5,7], axis=1)
 
     for i in range(100):
         print i
         '''
         Training and Testing Data
         '''
-        X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size=0.5, random_state=i)
+        X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size=0.3, random_state=i)
 
         '''
         Testing Models
         '''
         models = Models(X_train, X_test, Y_train, Y_test, X_final, index_final)
-        filename = 'Ridge_test0.5_rand' + str(i)  
-        models.ridge(filename)
-        filename = 'RidgeCV_test0.5_rand' + str(i)
-        models.ridgeCV(filename)
-        #models.lassoCV()
+        #filename = 'Ridge_test0.3_rand' + str(i)  
+        #models.ridge(filename)
+        #filename = 'RidgeCV_quad_test0.3_rand' + str(i)
+        #models.ridgeCV(filename)
+        filename = 'LassoCV_quad_test0.3_rand' + str(i)
+        models.lassoCV(filename)
         #models.SGD()
 
     '''
