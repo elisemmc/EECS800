@@ -201,10 +201,10 @@ def main():
     '''
     # F=open('blah.txt', 'w')#('parameterCheck(rm5rm7rm30)(0.4).txt', 'a')#
 
-    X = np.hstack((X_orig, np.square(X_orig))) #np.delete(X_orig, [5,7], axis=1)
-    X_final = np.hstack((X_final_orig, np.square(X_final_orig))) #np.delete(X_final_orig, [5,7], axis=1)
+    X = X_orig #np.delete(X_orig, [5,7], axis=1)
+    X_final = X_final_orig #np.delete(X_final_orig, [5,7], axis=1)
 
-    for i in range(100):
+    for i in range(100,110):
         print i
         '''
         Training and Testing Data
@@ -219,7 +219,7 @@ def main():
         #models.ridge(filename)
         #filename = 'RidgeCV_quad_test0.3_rand' + str(i)
         #models.ridgeCV(filename)
-        filename = 'LassoCV_quad_test0.2_rand' + str(i)
+        filename = 'LassoCV_test0.2_rand' + str(i)
         models.lassoCV(filename)
         #models.SGD()
 
