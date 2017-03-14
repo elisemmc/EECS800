@@ -4,20 +4,51 @@ import matplotlib.pyplot as plt
 #import statsmodels.api as sm
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_predict
+from sklearn.multioutput import MultiOutputRegressor
 from sklearn.linear_model import (LinearRegression, Ridge, RidgeCV, 
     MultiTaskLassoCV, SGDClassifier, SGDRegressor, TheilSenRegressor, 
     RANSACRegressor, HuberRegressor)
-from sklearn.kernel_ridge import KernelRidge
+from sklearn.neural_network import (MLPClassifier, MLPRegressor)
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 
-def MSE(X, Y):
-    '''
-    Compute and return MSE
-    '''
-    element = np.power((X - Y), 2)
-    mse = np.sum(element)/ len(X)
+from collections import namedtuple
 
-    return mse
+countries = {
+    'Australia' : [-35.3, 149.12],
+    'Brazil' : [-15.75, -47.95],
+    'Tanzania' : [-6.17, 35.74],
+    'Indonesia' : [-6.17, 106.82],
+    'Kenya' : [-1.26, 36.8],
+    'Ethiopia' : [9.03, 38.74],
+    'Cambodia' : [11.55, 104.91],
+    'Mali' : [12.65, -8],
+    'Thailand' : [13.75, 100.48],
+    'Senegal' : [14.66, -17.41],
+    'Cape Verde' : [14.91, -23.51],
+    'Belize' : [17.25, -88.76],
+    'Jamaica' : [17.98, -76.8],
+    'Myanmar' : [19.75, 96.1],
+    'Taiwan' : [23.76, 121],
+    'India' : [28.61, 77.2],
+    'Egypt' : [30.03, 31.21],
+    'Pakistan' : [33.66, 73.16],
+    'Morocco' : [34.03, -6.85],
+    'Iran' : [35.68, 51.41],
+    'Japan' : [35.7, 139.71],
+    'Algeria' : [36.7, 3.21],
+    'Greece' : [38, 23.71],
+    'Turkey' : [39.91, 32.83],
+    'China' : [39.91, 116.38],
+    'Uzbekistan' : [41.26, 69.21],
+    'Albania' : [41.33, 19.8],
+    'Georgia' : [41.71, 44.78],
+    'Italy' : [41.9, 12.48],
+    'Kyrgyzstan' : [42.86, 74.6],
+    'Romania' : [44.41, 26.1],
+    'UK' : [52.5, -0.12],
+    'Lithuania' : [54.68, 25.31]
+}
 
 def genCSV4(name, index, latitude, longitude):
     '''
@@ -72,9 +103,9 @@ class Models:
             fit_intercept=True, 
             normalize=False, 
             max_iter=None )
-        sciRidge.fit(self.X_train, self.Y_train)
+        sciRidge.fit(self.X_train, self.Y_train[:,:2])
         predict_test = sciRidge.predict(self.X_test)
-        MSE = mean_squared_error(predict_test, self.Y_test)
+        MSE = mean_squared_error(predict_test, self.Y_test[:,:2])
         s = "Sci Ridge              (MSE: %f)" % (MSE)
         print s    
         predict_final = sciRidge.predict(self.X_final)
@@ -89,9 +120,9 @@ class Models:
             fit_intercept=True,
             cv = 11,
             normalize=False )
-        sciRidgeCV.fit(self.X_train, self.Y_train)
+        sciRidgeCV.fit(self.X_train, self.Y_train[:,:2])
         predict_test = sciRidgeCV.predict(self.X_test)
-        MSE = mean_squared_error(predict_test,self.Y_test)
+        MSE = mean_squared_error(predict_test,self.Y_test[:,:2])
         s = "Sci RidgeCV            (MSE: %f)" % (MSE)
         print s
         predict_final = sciRidgeCV.predict(self.X_final)
@@ -118,57 +149,57 @@ class Models:
         '''
         SGD Classifier
         '''
-        sciSGDLat = SGDClassifier()
-        sciSGDLon = SGDClassifier()
-        Y_trainLat = self.Y_train[:,0].A1
-        Y_trainLon = self.Y_train[:,1].A1
-        Y_trainLat = np.array(["%.2f" % w for w in Y_trainLat])
-        Y_trainLon = np.array(["%.2f" % w for w in Y_trainLon])
+        sciSGD = SGDClassifier()
         
-        sciSGDLat.fit(self.X_train, Y_trainLat)
-        sciSGDLon.fit(self.X_train, Y_trainLon)
+        sciSGD.fit(self.X_train, self.Y_train[:,2])
 
-        predict_testLat = sciSGDLat.predict(self.X_test)#.astype(np.float)
-        predict_testLon = sciSGDLat.predict(self.X_test)#.astype(np.float)
+        predict_test = sciSGD.predict(self.X_test)#.astype(np.float)
 
-        predict_test = np.hstack((np.matrix(predict_testLat).transpose(), np.matrix(predict_testLon).transpose()))
-        print r2_score(predict_test, self.Y_test)
-
-        # scoreLat = sciSGDLat.score(self.X_test, Y_testLat)
-        # scoreLon = sciSGDLon.score(self.X_test, Y_testLon)
-
-        # s = "Sci SGD              (ScoreLat: %f) (ScoreLat: %f)" % (scoreLat, scoreLon)
-        # print s    
-        #predict_final = sciSGD.predict(self.X_final)
-        #genCSV( 'SciSGD.csv', self.index_final, predict_final )
-
-    def SGDRegressor(self):
+    def MLPClassifier(self, name):
         '''
-        SGD Classifier
+        MLP Classifier
         '''
-        sciSGDLat = SGDRegressor()
-        sciSGDLon = SGDRegressor()
-        Y_trainLat = self.Y_train[:,0].A1
-        Y_trainLon = self.Y_train[:,1].A1
-        Y_testLat = self.Y_test[:,0].A1
-        Y_testLon = self.Y_test[:,1].A1
-        
-        sciSGDLat.fit(self.X_train, Y_trainLat)
-        sciSGDLon.fit(self.X_train, Y_trainLon)
+        sciMLP = MLPClassifier(solver='lbfgs')
 
-        predict_testLat = sciSGDLat.predict(self.X_test)
-        predict_testLon = sciSGDLat.predict(self.X_test)
+        sciMLP.fit(self.X_train, self.Y_train[:,2].A1)
 
-        scoreLat = sciSGDLat.score(self.X_test, Y_testLat)
-        scoreLon = sciSGDLat.score(self.X_test, Y_testLat)
+        predict_class = sciMLP.predict(self.X_test)
 
+        predict_test = np.zeros((len(predict_class), 2))
 
-        predict_test = np.hstack((np.matrix(predict_testLat).transpose(), np.matrix(predict_testLon).transpose()))
+        for i in range(len(predict_class)):
+            predict_test[i] = countries[predict_class[i]]
 
+        MSE = mean_squared_error(predict_test, self.Y_test[:,:2])
 
-        s = "Sci SGDRegressor     (ScoreLat: %f) (ScoreLon: %f)" % (scoreLat, scoreLon)
-        print s
+        print MSE
 
+    def MLPRegressor(self, name):
+        sciMLP = MultiOutputRegressor(
+            MLPRegressor(hidden_layer_sizes=(66,), 
+            activation='logistic', solver='adam', max_iter=200, batch_size=50)
+            )
+
+        sciMLP.fit(self.X_train, self.Y_train[:,:2])
+
+        predict_test = sciMLP.predict(self.X_test)
+
+        MSE = mean_squared_error(predict_test, self.Y_test[:,:2])
+
+        print MSE
+
+    def ForestRegressor(self, name):
+        sciForest = MultiOutputRegressor(
+            RandomForestRegressor(n_estimators=33)
+            )
+
+        sciForest.fit(self.X_train, self.Y_train[:,:2])
+
+        predict_test = sciForest.predict(self.X_test)
+
+        MSE = mean_squared_error(predict_test, self.Y_test[:,:2])
+
+        print MSE
 
 
 def main():
@@ -204,7 +235,7 @@ def main():
     X = X_orig #np.delete(X_orig, [5,7], axis=1)
     X_final = X_final_orig #np.delete(X_final_orig, [5,7], axis=1)
 
-    for i in range(110,115):
+    for i in range(120,125):
         print i
         '''
         Training and Testing Data
@@ -221,13 +252,14 @@ def main():
         #models.ridgeCV(filename)
         filename = 'LassoCV_test0.2_rand' + str(i)
         models.lassoCV(filename)
-        #models.SGD()
+        #filename = 'MLP_test0.2_rand' + str(i)
+        #models.ForestRegressor(filename)
 
     '''
     Plotting
     '''
     #for i in range(X.shape[1]):
-    #    plt.scatter(np.array(Y[:,0]),np.array(X[:,i]), alpha=0.1)
+    #    plt.scatter(np.array(Y[:,0]),np.array(Y[:,1]), alpha=0.1)
     #plt.show()
 
 
