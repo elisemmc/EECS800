@@ -151,37 +151,46 @@ $$\hat{\theta}(dollar|spam)=\frac{dollar|spam}{spam}=\frac{1}{3}$$
 a design approach? (from AML book)\\
 \begin{solution} \\%{{{
 1. Determining the age at which a particular medical test should be performed\\
- \checkmark A pattern exists \qquad  \checkmark Explanatory mathematical function does not exist \qquad ? There is data
-This could be a good fit for a learning approach if enough data could be acquired.  Patterns in effectiveness of things like medical tests are often difficult to tackle with design approaches so a learning approach could be useful.  I don't know what kind of test it is or the parameters that they judge on, so I'm going to just assume that data is available and say this would be appropriate for a learning approach.
+ \checkmark A pattern exists \qquad  \checkmark Explanatory mathematical function does not exist \qquad ? There is data\\
+This could be a good fit for a learning approach if enough data could be acquired.  Patterns in effectiveness of things like medical tests are often difficult to tackle with design approaches so a learning approach could be useful.  I don't know what kind of test it is or the parameters that they judge on, so I'm going to just assume that data is available and say this would be appropriate for a learning approach.\\
+\textbf{Either. Design approach will allow for experimental design and higher certainty but if data is
+available it may be faster and quicker to use a Learning approach.}
 \\\\
 2. Classifying numbers into primes and non-primes\\
- \checkmark A pattern exists \qquad  X Explanatory mathematical function does not exist \qquad  \checkmark There is data
-This is clearly a design approach problem since primes, by their very nature, are mathematically defined.
+ \checkmark A pattern exists \qquad  X Explanatory mathematical function does not exist \qquad  \checkmark There is data\\
+This is clearly a design approach problem since primes, by their very nature, are mathematically defined.\\
+\textbf{Design: Math has ways of checking if a number is prime though finding prime numbers is
+slightly more challenging. Additionally, number theory suggests there might not be a pattern
+in terms of when prime numbers occur.}
 \\\\
 3. Detecting potential fraud in credit card charges\\
  \checkmark A pattern exists \qquad  \checkmark Explanatory mathematical function does not exist \qquad  \checkmark There is data
-This is an ideal candidate for a learning approach.
+This is an ideal candidate for a learning approach.\\
+\textbf{Learning: Data exists, there's no clear analytical solution}
 \\\\
 4. Determining the time it would take a falling object to hit the ground\\
- \checkmark A pattern exists \qquad  X Explanatory mathematical function does not exist \qquad  \checkmark There is data
-Again, this is mathematically defined, so a design approach is appropriate.
+ \checkmark A pattern exists \qquad  X Explanatory mathematical function does not exist \qquad  \checkmark There is data\\
+Again, this is mathematically defined, so a design approach is appropriate.\\
+\textbf{Design: Physics has theories and laws that can easily and accurately predict this.}
 \\\\
 5. Determining the optimal cycle for traffic lights in a busy intersection\\
- \checkmark A pattern exists \qquad  \checkmark Explanatory mathematical function does not exist \qquad  \checkmark There is data
-This would be good for a learning approach since traffic activity is often difficult to mathematically define, but follows patterns.
+ \checkmark A pattern exists \qquad  \checkmark Explanatory mathematical function does not exist \qquad  \checkmark There is data\\
+This would be good for a learning approach since traffic activity is often difficult to mathematically define, but follows patterns.\\
+\textbf{Learning: data is cheap, system is not easily represented as an equation that has an optimal
+solution, there is likely a pattern in the data.}
 \end{solution} %}}}
 
 \question You have an unfair 6-sided die (i.e. 1 dice). Values 1 and 4 are rolled with probability 1/4. All other
 values are rolled with probability 1/8. \\
 \begin{solution} \\%{{{
 (a) What is the formula for expected value in the discrete case?\\
-$$E[X]=\sum_{i=1}^{n}x_i p_i$$
+$$E[X]=\sum_{i=1}^{n}x_i p(x_i)$$
 (b) What is the expected value of a single throw of the biased die?\\
-$$E[X]=\sum_{i=1}^{6}x_i p_i= 1(\frac{1}{4}) + 2(\frac{1}{8}) + 3(\frac{1}{8}) + 4(\frac{1}{4}) + 5(\frac{1}{8}) + 6(\frac{1}{8})=3.25$$
+$$E[X]=\sum_{i=1}^{6}Pr(d) * d= 1(\frac{1}{4}) + 2(\frac{1}{8}) + 3(\frac{1}{8}) + 4(\frac{1}{4}) + 5(\frac{1}{8}) + 6(\frac{1}{8})=3.25$$
 (c) What is the variance of the biased die?\\
-$$\sigma^2 = \sum_{i=1}^{6} (x_i-\mu_i)^2p_i$$ 
+$$\sigma^2 = \sum_{i=1}^{6} (x_i-\mu)^2p_i$$ 
 $$(1-3.25)^2(\frac{1}{4}) + (2-3.25)^2(\frac{1}{8}) + (3-3.25)^2(\frac{1}{8}) + (4-3.25)^2(\frac{1}{4}) + (5-3.25)^2(\frac{1}{8}) + (6-3.25)^2(\frac{1}{8})$$
-$$\sigma^2 = 2.9375$$
+$$\sigma^2 = \frac{47}{16} = 2.9375$$
 \end{solution} %}}}
 
 \question Assume we know that $x_1, x_2, . . . , x_n \sim N(\mu, \sigma^2)$ but we don?t know the value of $\mu$. Construct and solve for a likelihood function such that we maximize $P(x|\mu, \sigma)$ [Hint: you will need to know the analytical form of the normal equation, also assume x is iid. Hint 2: Computing the log likelihood is easiest.]
@@ -207,7 +216,68 @@ $$\sum(x_i) - n \mu = 0 \implies \hat\mu = \frac{\sum x_i}{n} = \bar{x}$$
 $$\frac{\partial}{\partial \sigma^2} \log{L{(\mu , \sigma^2)}} = -\frac{n}{2\sigma^2} + \frac{\sum(x_i-\mu)^2}{2(\sigma^2)^2}$$
 $$-\frac{n}{2\sigma^2} + \frac{\sum(x_i-\mu)^2}{2(\sigma^2)^2} = 0 \implies -n\sigma^2 + \sum(x_i-\bar{x})^2 = 0 \implies \hat{\sigma^2} = \frac{\sum(x_i-\bar{x})^2}{n}$$
 
+TEACHER SOLUTION\\
+There are two approaches Bayesian estimation and MLE. 
+
+The first solution is the MLE which assumes both $\mu$ and $\sigma$ are unknown. Here we can write down the normal density function, convert it to log-likelihood, compute derivative and set it equal to $0$. Solving that equation will tell us the MLE for $\mu$ and $\sigma$ both.
+
+We can also use Bayesian estimation where we assume $\mu$ is unknown but
+$\sigma$ is known.
+
+Solution 1:
+\begin{align*}
+L(\mu, \sigma) &= f(x|\mu,\sigma)= \prod_{i=1}^n (2\pi \sigma)^2 \exp [\frac{-(x-\mu)^2}{2\sigma^2}]\\
+\ell(\mu,\sigma) &=\sum_{i=1}^n[- \log \sigma -\frac{1}{2} \log2 \pi-\frac{1}{2\sigma^2}(x_{i}-\mu)^2]\\
+&= \sum_{i=1}^n \log \big(\frac{1}{\sqrt{2\sigma^2\pi}}\exp[\frac{-(x_i - \mu)^2}{2\sigma^2}]\big)\\
+&= \sum_{i+1}^n(\frac{-(x_i-\mu)^2}{2\sigma^2} - \log \sqrt{2\sigma^2\pi})\\
+\frac{d \log\mathcal{L}(x|\mu,\sigma)} {d \mu} &= \sum_{i=1}^n \frac{-2\cdot-1(x_i-\mu)}{2\sigma^2} = 0\\
+&=\sum_{i=1}^n \frac{(x_i-\mu)}{2\sigma^2}
+=\sum_{i=1}^n (x_i - \mu)\\
+&\sum_{i=1}^n x_i = n\cdot\hat{\mu}\\
+&\frac{1}{n} \sum_{i=1}^{n}x_i =  \hat{\mu}\\
+\end{align*}
+Solution 2
+\[p(x|\mu)\sim N(\mu,\sigma^2)\]
+also the Gaussian prior has a mean distribution that is itself normal: 
+$p(\mu)\sim N(\mu_{0},\sigma_{0}^2)$
+\[ p(\mu|x)=\frac{p(x|\mu)p(\mu)}{p(X)}=\alpha \times \prod_{i}^n p(x_{i}|\mu)p(\mu)\text{ and }\alpha=\frac{1}{p(X)}\]
+Note: $\alpha$ is independent of $\mu$.
+\begin{align*}
+p(\mu|x) &= \alpha \times \prod_{i}^n \times \frac{1}{\sqrt{2\pi\sigma^2}} \exp[\frac{-(x_{i}-\mu)^2}{2\sigma^2}]\\
+&= \frac{1}{\sqrt{2\pi\sigma_{0}^2}}\frac{-(\mu-\mu_{0})^2}{2\sigma_{0}^2}]\\
+&\rightarrow \beta \times \exp \big[-1/2(\sum_{i}^n(\frac{-(x_{i}-\mu)^2}{\sigma^2}+\frac{-(\mu-\mu_{0})^2}{\sigma_{0}^2}))\big]\\
+&\rightarrow \gamma \times \exp \big[-1/2[(n/\sigma^2 + 1/\sigma_{0}^2)\mu^2-2\big(1/\sigma^2\sum_{i}^n x_{i}-\mu_{0}/\sigma_{0}^2\big)\mu]\big]\\
+&\rightarrow (n/\sigma^2 + 1/\sigma_{0}^2)\mu^2-2\big(1/\sigma^2\sum_{i}^n x_{i}-\mu_{0}/\sigma_{0}^2\big)\mu + \gamma = \frac{(\mu-\mu_{n})^2}{\sigma_{n}} \\
+\end{align*}
+So from $\mu_{n}$ and $\sigma_{n}^2$:
+
+\[\mu_{n}=\frac{n\sigma_{0}^2}{n\sigma_{0}^2+\sigma^2}
+\hat{\mu_{n}}+\frac{\sigma^2}{n\sigma_{0}^2+\sigma^2} \mu_{0} \rightarrow
+\hat{\mu_{n}}=\frac{\sum_{i}^n x_{i}}{n} = \overline{X}\]
+So our MLE for $\mu$ would (again) be $\frac{1}{n}\sum\limits_{i=1}^nx_i$
+
 \end{solution} %}}}
+
+\question Bias Variance Tradeoff
+\begin{solution}
+Squared bias is large in simple models, as flexibility
+    increases the bias decreases as the model is more able to approximate
+    the true underlying function. If bias is too high, the model is likely
+    to underfit.
+
+    Variance increases as the model flexibility increases as the model is
+    more able to account for weaker trends in the training data. One way to
+    think about variance is a quantification of how the model would change
+    if it was constructed using a different training data sample. If the
+    model would change significantly, then the model is a high variance
+    model and has likely overfit the training data.
+
+    Training error monotonically decreases as flexibility increases as more
+    and more specific trends are being captured by the model. Testing
+    data takes a u-shape where the left side is under-fitting, and the right
+    side is over-fitting. Testing error is the sum of bias-squared plus
+    variance.
+\end{solution}
 
 \question From FML chapter 2. Let $X = R^2$. Consider the set of concepts of the form $c = (x, y) : x^2 + y^2 \leq r^2$
 for some real number $r$. Show that this class can be $(\epsilon , \delta)$-PAC-learned from the training data of size
@@ -223,6 +293,27 @@ m & \geq \frac{1}{\epsilon}\ln\frac{1}{\delta}
 The number of samples required for PAC learning:\\
 $$m \geq \frac{1}{\epsilon} (\ln |H| + \ln\frac{1}{\delta})$$
 We know that since the concept class only contains a single hypothesis, we know that cardinality term drops out and leaves us with the form suggested in the question. $m \geq \frac{1}{\epsilon}\ln\frac{1}{\delta}$
+\\\\
+TEACHER SOLUTION\\
+  WLOG, suppose our target concept $c$ is the circle around the origin with
+  radius $r$. We will choose a slightly smaller radius $4$ by
+  \[ s := \text{inf}\{s': P(s'\leq ||x|| \leq r) < \epsilon\} \]
+  Let $A$ denote the annulus between radii $s$ and $r$; that is, $A := \{ x:
+  s \leq ||x|| \leq r\}$
+
+  By definition of $s$,
+  \[P(A) \geq \epsilon\]
+  In addition, our generalization error, $P(c\Delta L(T))$, must be small if
+  $T$ intersects $A$. We can state this as
+  \[P(c\Delta L(T)) > \epsilon \implies T \cap A = \emptyset \]
+  Using $P(A) \geq \epsilon$, we know that any point in $T$ chosen according
+  to $p$ will ``miss'' region $A$ with probability at most $1- \epsilon$.
+  Defining error $:= P(c\Delta L(T))$, we can combine this with the above
+  equation to see that 
+  \[ P(\text{error } > \epsilon) \leq P(T\cap A = \emptyset) \leq
+  (1-\epsilon)^m \leq e^{-m\epsilon}\]
+  Setting $\delta$ to be greater than or equal to the right-hand side leads
+  to $m \geq \frac{1}{\epsilon} \log(\frac{1}{\delta})$
 \end{solution} %}}}
 \vfill
 
