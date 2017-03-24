@@ -235,7 +235,7 @@ def main():
     X = X_orig #np.delete(X_orig, [5,7], axis=1)
     X_final = X_final_orig #np.delete(X_final_orig, [5,7], axis=1)
 
-    for i in range(135,140):
+    for i in range(140,145):
         print i
         '''
         Training and Testing Data
