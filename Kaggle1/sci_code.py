@@ -142,6 +142,7 @@ class Models:
         MSE = mean_squared_error(predict_test,self.Y_test)
         s = "Sci LassoCV            (MSE: %f)" % (MSE)
         print s
+        print  sciLasso.score(self.X_test, self.Y_test)
         predict_final = sciLasso.predict(self.X_final)
         genCSV( name + '_MSE' + str(MSE), self.index_final, predict_final )
 
@@ -235,7 +236,7 @@ def main():
     X = X_orig #np.delete(X_orig, [5,7], axis=1)
     X_final = X_final_orig #np.delete(X_final_orig, [5,7], axis=1)
 
-    for i in range(140,145):
+    for i in range(145,150): #140-145
         print i
         '''
         Training and Testing Data
