@@ -12,6 +12,8 @@ from sklearn.neural_network import (MLPClassifier, MLPRegressor)
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 
+from scipy.stats import ttest_ind
+
 from collections import namedtuple
 
 countries = {
@@ -142,7 +144,9 @@ class Models:
         MSE = mean_squared_error(predict_test,self.Y_test)
         s = "Sci LassoCV            (MSE: %f)" % (MSE)
         print s
-        print  sciLasso.score(self.X_test, self.Y_test)
+        # print  sciLasso.score(self.X_test, self.Y_test)
+        print sciLasso.coef_
+        print np.nonzero(sciLasso.coef_)
         predict_final = sciLasso.predict(self.X_final)
         genCSV( name + '_MSE' + str(MSE), self.index_final, predict_final )
 
@@ -225,6 +229,10 @@ def main():
     #print np.unique(np.array(Y[:,0]))
     #print np.unique(np.array(Y[:,1]))
 
+    # for i in range(X_orig.shape[1]):
+    #     t, p = ttest_ind(X_orig[i,:].A1, Y)
+    #     print "feature " + str(i) + ": " + str(p)
+
     X_final_orig = np.matrix(pdTestX.values)
     index_final = np.matrix(pdTestIndex.values).transpose()
 
@@ -236,7 +244,7 @@ def main():
     X = X_orig #np.delete(X_orig, [5,7], axis=1)
     X_final = X_final_orig #np.delete(X_final_orig, [5,7], axis=1)
 
-    for i in range(145,150): #140-145
+    for i in range(150,155): #140-145
         print i
         '''
         Training and Testing Data
@@ -247,14 +255,9 @@ def main():
         Testing Models
         '''
         models = Models(X_train, X_test, Y_train, Y_test, X_final, index_final)
-        #filename = 'Ridge_test0.3_rand' + str(i)  
-        #models.ridge(filename)
-        #filename = 'RidgeCV_quad_test0.3_rand' + str(i)
-        #models.ridgeCV(filename)
+
         filename = 'LassoCV_test0.2_rand' + str(i)
         models.lassoCV(filename)
-        #filename = 'MLP_test0.2_rand' + str(i)
-        #models.ForestRegressor(filename)
 
     '''
     Plotting
