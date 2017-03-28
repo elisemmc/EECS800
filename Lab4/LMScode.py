@@ -154,7 +154,7 @@ Y_test = test[1]
 Z_train = train[2]
 Z_test = test[2]
 
-'''
+
 file=open('./testfile.csv', 'w+')
 
 beta = OLSData(X_train, Y_train)
@@ -180,7 +180,7 @@ for a in alpha:
             output = str(a)+ ', ' + str(b) + ', ' + str(s) + ', ' + str(LMSbeta.round(decimals=1)) + ', ' + str(LMSEin) + ', ' + str(LMSEout) + ',\n'
             print output
             file.write(output)
-'''
+
 
 CLASSbeta = Classify(train[0], train[2], test[0], test[2])
 print "Final Beta: " + str(CLASSbeta)
