@@ -80,13 +80,9 @@ def expectation(dataFrame, parameters):
   mu = (mu_1, mu_2)
   sig = (sig_1, sig_2)
 
-  posterior(data, mu, sig, alpha)
+  soft_guess = posterior(data, mu, sig, alpha)
   
-  # print multivariate_normal.pdf(x=data[0], mean=mu_1, cov=sig_1)
-  
-
-  return #dataframe with the soft guess for the labels
-
+  return soft_guess #dataframe with the soft guess for the labels
 
 # The M - step: update estimates of alpha, mu, and sigma
 def maximization(dataFrame, parameters):
