@@ -10,6 +10,10 @@ from scipy.stats import norm
 from scipy.stats import multivariate_normal
 from sys import maxint
 
+# I have an annoying future-warning I don't feel like looking at
+import warnings
+warnings.filterwarnings("ignore")
+
 #Please complete the following Expectation Maximization code, implementing a batch EM is sufficient for this lab
 
 #set a random seed, remember to set the correct seed if you want to use another command for seeding
@@ -23,8 +27,9 @@ muPrime = [6, 0]
 sigPrime = [ [5, 0], [0, 2] ]
 
 #Generate samples of type MVN and size 100 using mu/sigma and muPrime/sigmaPrime. 
-x1, y1 = np.random.multivariate_normal(mu, sig, 100).T #MVN sample of size 100 using mu and sigma
-x2, y2 = np.random.multivariate_normal(muPrime, sigPrime, 100).T #MVN sample of size 100 using muPrime and sigmaPrime
+num_points = 100
+x1, y1 = [ rand.gauss(mu[0], sig[0][0]) for _ in range(num_points) ], [ rand.gauss(mu[1], sig[1][1]) for _ in range(num_points) ]
+x2, y2 = ( [rand.gauss(muPrime[0], sigPrime[0][0]) for _ in range(num_points)], [rand.gauss(muPrime[1], sigPrime[1][1]) for _ in range(num_points)] ) #np.random.multivariate_normal(muPrime, sigPrime, 100).T #MVN sample of size 100 using muPrime and sigmaPrime
 
 x = np.concatenate((x1, x2))
 y = np.concatenate((y1, y2))
@@ -138,5 +143,5 @@ while ( ( iters < max_iters ) and ( converge == False ) ):
 
   # return a scatter plot for each iteration, e.g. plt.scatter(df_new['x'], df_new['y'], ...) while the colors are based on the labels
   f = plt.figure()
-  plt.scatter(df['x'],df['y'],c=df['label'])
+  plt.scatter(new_df['x'],new_df['y'],c=new_df['label'],s=100)
   f.savefig("iter{}.png".format(iters))
