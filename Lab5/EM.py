@@ -45,53 +45,57 @@ initialGuess = { 'mu': [2,2], 'sig': [ [1, 0], [0, 1] ], 'muPrime': [5,5], 'sigP
 # Compute the posterior with the help of computing the pdf, e.g. using norm.pdf
 def posterior(val, mu, sig, alpha):
   '''posteriors'''
-  probs = np.zeros( ( val.shape[0], len(alpha) ) )
-  num_classes = len(alpha)
-  sums = 0
-
-  for c in range(num_classes):
-  	a = alpha[c]
-   	m = mu[c]
-   	s = sig[c]
-	pdf =  multivariate_normal.pdf(x=val, mean=m, cov=s)
-	sums += a * pdf
-	probs[:,c] = a*pdf
-
-  for c in range(num_classes):
-  	probs[:,c] = np.divide( probs[:,c], sums )
-  
-  print probs
-  #print np.sum(probs, axis=1)
-  return probs 
+  prob = alpha
+  for v in range(len(val)):
+    prob *= norm.pdf(val[v],mu[v],sig[v][v])
+  return prob 
 
 # The E-step, estimate w, this w is the "soft guess" step for the class labels. You have to use the already defined posteriors in this step.
 def expectation(dataFrame, parameters):
   '''This function uses the posteriors to estimate w.'''
-
-  data = dataFrame.as_matrix()
+  values = dataFrame[['x','y']].as_matrix()
   alpha = parameters['alpha'].tolist()
   
-  mu_1 = parameters['mu'].tolist()
-  sig_1 = parameters['sig'].tolist()
+  mu = (parameters['mu'].tolist(), parameters['muPrime'].tolist())
+  sig = (parameters['sig'].tolist(), parameters['sigPrime'].tolist())
 
-  mu_2 = parameters['muPrime'].tolist()
-  sig_2 = parameters['sig'].tolist()
+  label = np.zeros(values.shape[0])
 
-  mu = (mu_1, mu_2)
-  sig = (sig_1, sig_2)
+  for v in range(values.shape[0]):
+    c1 =  posterior(values[v], mu[0], sig[0], alpha[0])
+    c2 =  posterior(values[v], mu[1], sig[1], alpha[1])
+    label[v] = 0 if ( c1 > c2 ) else 1
 
-  soft_guess = posterior(data, mu, sig, alpha)
-  
-  return soft_guess #dataframe with the soft guess for the labels
+  dataFrame['label'] = label
+
+  return dataFrame #dataframe with the soft guess for the labels
 
 # The M - step: update estimates of alpha, mu, and sigma
 def maximization(dataFrame, parameters):
   '''Update parameters'''
-  return parameters
+  new_params = parameters.copy()
 
+  c1_df = dataFrame[ dataFrame['label'] == 0 ]
+  c2_df = dataFrame[ dataFrame['label'] == 1 ]
+
+  new_params['alpha'] = [ float(len(c1_df)) / float(len(dataFrame)), float(len(c2_df)) / float(len(dataFrame)) ]
+  new_params['mu'] = [ c1_df['x'].mean(), c1_df['y'].mean() ]
+  new_params['muPrime'] = [ c2_df['x'].mean(), c2_df['y'].mean() ]
+  new_params['sig'] = [ [ c1_df['x'].std(), 0 ], [ 0, c1_df['y'].std() ] ]
+  new_params['sigPrime'] = [ [ c2_df['x'].std(), 0 ], [ 0, c2_df['y'].std() ] ]
+
+  return new_params
 
 # Check Convergence, define your convergence criterion. You can define a new function for this purpose or just check it in the loop. You will have to use this function at the end of each while/for loop's EM iteration to check whether we have reached "convergence" or not. So to test for convergence, we can calculate the log likelihood at the end of each EM step (e.g. model fit with these parameters) and then test whether it has changed “significantly” (defined by the user, e.g. it should be something similar to: if(loglik.diff < 1e-6) ) from the last EM step. If it has, then we repeat another step of EM. If not, then we consider that EM has converged and then these are our final parameters.
 
+def convergeCheck(params, new_params, epsilon):
+  sig_old = [params['sig'].tolist()[0][0], params['sig'].tolist()[1][1], params['sigPrime'].tolist()[0][0], params['sigPrime'].tolist()[1][1]] 
+  sig_new = [new_params['sig'].tolist()[0][0], new_params['sig'].tolist()[1][1], new_params['sigPrime'].tolist()[0][0], new_params['sigPrime'].tolist()[1][1]]
+  
+  mu_dist =  np.linalg.norm( np.array(params['mu'].tolist() + params['muPrime'].tolist()) - np.array(new_params['mu'].tolist() + new_params['muPrime'].tolist()) )
+  sig_dist = np.linalg.norm( np.array(sig_old) - np.array(sig_new) )
+
+  return ( (mu_dist < epsilon) and (sig_dist < epsilon) )
 # Iterate until convergence: with E-step, M-step, checking our etimates of mu/checking whether we have reached convergece, and updating the parameters for the next iteration. This part of the code should print a figure for *each* iteration, the *final* parameters, and #iterations. The final outcome that you have to submit is your EM code and a .pdf report. Your report should have the plots for **each** iteration, your **explanation on the convergence criterion you used based on last paragraph's explanations**, your final parameters, and the general flow of your code.
 
 
@@ -101,19 +105,28 @@ def maximization(dataFrame, parameters):
 iters = 0
 params = pd.DataFrame(initialGuess)
 
-while iters < 1:
+epsilon = 0.01
+max_iters = 10
+
+converge = False
+
+while ( ( iters < max_iters ) and ( converge == False ) ):
   iters += 1
 
-  expectation(df, params)
   # E-step
- 
+  new_df = expectation(df, params)
+
   # M-step
- 
+  new_params = maximization(new_df, params)
+
   # see if our estimates of mu have changed and check convergence
-  
+  # converge = convergeCheck(params.copy(), new_params.copy(), epsilon)
   # print parameters for each iteration
+  print params
 
   # update labels and parameters for the next iteration
-   
+  df = new_df
+  params = new_params
+
   # return a scatter plot for each iteration, e.g. plt.scatter(df_new['x'], df_new['y'], ...) while the colors are based on the labels
 
