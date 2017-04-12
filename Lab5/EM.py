@@ -105,28 +105,38 @@ def convergeCheck(params, new_params, epsilon):
 iters = 0
 params = pd.DataFrame(initialGuess)
 
-epsilon = 0.01
-max_iters = 10
+epsilon = 0.001
+max_iters = 20
 
 converge = False
+
+old_df = df
+old_params = params
 
 while ( ( iters < max_iters ) and ( converge == False ) ):
   iters += 1
 
   # E-step
-  new_df = expectation(df, params)
+  new_df = expectation(old_df, old_params)
 
   # M-step
-  new_params = maximization(new_df, params)
+  new_params = maximization(new_df, old_params)
 
   # see if our estimates of mu have changed and check convergence
-  # converge = convergeCheck(params.copy(), new_params.copy(), epsilon)
+  converge = convergeCheck(old_params.copy(), new_params.copy(), epsilon)
+  
   # print parameters for each iteration
-  print params
+  print new_params
 
   # update labels and parameters for the next iteration
-  df = new_df
-  params = new_params
+  if new_params.isnull().values.any():
+    print '\n\n FAILED TO CLASSIFY -- PLEASE RERUN \n\n'
+    break
+  else:  
+    old_df = new_df
+    old_params = new_params
 
   # return a scatter plot for each iteration, e.g. plt.scatter(df_new['x'], df_new['y'], ...) while the colors are based on the labels
-
+  f = plt.figure()
+  plt.scatter(df['x'],df['y'],c=df['label'])
+  f.savefig("iter{}.png".format(iters))
