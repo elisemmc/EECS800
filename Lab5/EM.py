@@ -130,7 +130,7 @@ while ( ( iters < max_iters ) and ( converge == False ) ):
 
   # update labels and parameters for the next iteration
   if new_params.isnull().values.any():
-    print '\n\n FAILED TO CLASSIFY -- PLEASE RERUN \n\n'
+    print '\n\n \033[93mFAILED TO CLASSIFY -- PLEASE RERUN \n\n'
     break
   else:  
     old_df = new_df
