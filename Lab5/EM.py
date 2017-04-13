@@ -26,7 +26,7 @@ sigPrime = [ [5, 0], [0, 2] ]
 
 #Generate samples of type MVN and size 100 using mu/sigma and muPrime/sigmaPrime. 
 num_points = 100
-x1, y1 = ( [ rand.gauss(mu[0], sig[0][0]) for _ in range(num_points) ], [ rand.gauss(mu[1], sig[1][1]) for _ in range(num_points) ] )
+x1, y1 = ( [rand.gauss(mu[0], sig[0][0]) for _ in range(num_points)], [rand.gauss(mu[1], sig[1][1]) for _ in range(num_points)] )
 x2, y2 = ( [rand.gauss(muPrime[0], sigPrime[0][0]) for _ in range(num_points)], [rand.gauss(muPrime[1], sigPrime[1][1]) for _ in range(num_points)] ) 
 
 x = np.concatenate((x1, x2))
@@ -46,16 +46,18 @@ initialGuess = { 'mu': [2,2], 'sig': [ [1, 0], [0, 1] ], 'muPrime': [5,5], 'sigP
 def posterior(val, mu, sig, alpha):
   '''posteriors'''
   prob = alpha
-  for v in range(len(val)):prob *= norm.pdf(val[v],mu[v],sig[v][v])
+  for v in range(len(val)): prob *= norm.pdf(val[v],mu[v],sig[v][v])
   return prob 
 
 # The E-step, estimate w, this w is the "soft guess" step for the class labels. You have to use the already defined posteriors in this step.
 def expectation(dataFrame, parameters):
   '''This function uses the posteriors to estimate w.'''
   values = dataFrame[['x','y']].as_matrix()
-  alpha = parameters['alpha'].tolist();mu = (parameters['mu'].tolist(), parameters['muPrime'].tolist());sig = (parameters['sig'].tolist(), parameters['sigPrime'].tolist())
+  alpha = parameters['alpha'].tolist()
+  mu = (parameters['mu'].tolist(), parameters['muPrime'].tolist())
+  sig = (parameters['sig'].tolist(), parameters['sigPrime'].tolist())
   label = np.zeros(values.shape[0])
-  for v in range(values.shape[0]):label[v] = 0 if ( posterior(values[v],mu[0],sig[0],alpha[0])  > posterior(values[v],mu[1],sig[1],alpha[1]) ) else 1
+  for v in range(values.shape[0]): label[v] = 0 if ( posterior(values[v],mu[0],sig[0],alpha[0])  > posterior(values[v],mu[1],sig[1],alpha[1]) ) else 1
   dataFrame['label'] = label
   return dataFrame #dataframe with the soft guess for the labels
 
@@ -64,7 +66,11 @@ def maximization(dataFrame, parameters):
   '''Update parameters'''
   new_params = parameters.copy()
   c1_df = dataFrame[ dataFrame['label'] == 0 ];c2_df = dataFrame[ dataFrame['label'] == 1 ]
-  new_params['alpha'] = [ float(len(c1_df)) / float(len(dataFrame)), float(len(c2_df)) / float(len(dataFrame)) ];new_params['mu'] = [ c1_df['x'].mean(), c1_df['y'].mean() ];new_params['muPrime'] = [ c2_df['x'].mean(), c2_df['y'].mean() ];new_params['sig'] = [ [ c1_df['x'].std(), 0 ], [ 0, c1_df['y'].std() ] ];new_params['sigPrime'] = [ [ c2_df['x'].std(), 0 ], [ 0, c2_df['y'].std() ] ]
+  new_params['alpha'] = [ float(len(c1_df)) / float(len(dataFrame)), float(len(c2_df)) / float(len(dataFrame)) ]
+  new_params['mu'] = [ c1_df['x'].mean(), c1_df['y'].mean() ]
+  new_params['muPrime'] = [ c2_df['x'].mean(), c2_df['y'].mean() ]
+  new_params['sig'] = [ [ c1_df['x'].std(), 0 ], [ 0, c1_df['y'].std() ] ]
+  new_params['sigPrime'] = [ [ c2_df['x'].std(), 0 ], [ 0, c2_df['y'].std() ] ]
   return new_params
 
 # Check Convergence, define your convergence criterion. You can define a new function for this purpose or just check it in the loop. You will have to use this function at the end of each while/for loop's EM iteration to check whether we have reached "convergence" or not. So to test for convergence, we can calculate the log likelihood at the end of each EM step (e.g. model fit with these parameters) and then test whether it has changed “significantly” (defined by the user, e.g. it should be something similar to: if(loglik.diff < 1e-6) ) from the last EM step. If it has, then we repeat another step of EM. If not, then we consider that EM has converged and then these are our final parameters.
