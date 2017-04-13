@@ -87,7 +87,7 @@ def convergeCheck(params, new_params, epsilon):
 
 iters = 0
 params = pd.DataFrame(initialGuess)
-epsilon = 0.001
+epsilon = 0.000001
 max_iters = 20
 converge = False
 old_df = df
