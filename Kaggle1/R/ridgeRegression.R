@@ -1,0 +1,1 @@
+MyData <- read.csv(file="InputData/trainPredictors", header=TRUE, sep=",")
