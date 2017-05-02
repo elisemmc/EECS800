@@ -1,0 +1,39 @@
+\documentclass[11pt]{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{subfig}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Support Vector Machines}
+\author{Elise McEllhiney}
+\date{\today}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\section{Final Outputs}
+\begin{align}
+\text{Support Vectors:} \quad & set([0, 2, 4])\\
+\text{Slack Vectors:} \quad & set([4, 6])
+\end{align}
+\\
+\section{Explanation}
+
+The code first finds the weight function given the input points.  This is calculated as:
+$$\pmb{w} = \sum_i^n \alpha_i y_i \pmb{x}_i$$
+
+Using the primal weight vector I can calculate the gammas as follows:
+$$\gamma_j = \Big\lvert \frac{ \pmb{w}^T \pmb{x}_j + b }{ \lVert \pmb{x} \rVert} \Big\rvert$$
+
+If the gamma value of the point is within the specified tolerance of the minimum gamma value, then the vector is considered a support vector.  The support vectors are the points that lie on the edge of our margin.  We use a tolerance since floating point numbers don't produce exact answers when computed.  The point is a slack vector if it fails to meet the following condition:
+$$y_j * \pmb{w}^T \pmb{x}_j + b \geq 1$$
+
+The slack vectors are the points that are misclassified by our data.
+
+\end{document}
