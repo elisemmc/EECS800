@@ -55,7 +55,7 @@ def Slack(x, y, w, b):
     slack = set()
 
     for i in range(x.shape[0]):
-    	if ( y[i] * ( np.dot( w, x[i] ) + b ) >= 1 ):
+    	if not( y[i] * ( np.dot( w, x[i] ) + b ) >= 1 ):
     		slack.add(i)
 
     return slack
@@ -97,17 +97,12 @@ LagrangeMultiplier[0] = 0.12
 LagrangeMultiplier[2] = 0.22
 
 
-
 w = weightVector(x1, y1, LagrangeMultiplier)
-
-
-
 
 #Given b, find the support set.
 b = -0.2
 s = Support(x1, y1, w, b)
 print s
-
 
 # Given the following values, compute the slack indeces.
 w2 = [-.25, .25]
